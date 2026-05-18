@@ -50,7 +50,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Our Learning Portal <noreply@ourlearningportal.com>',
+        from: 'Our Learning Portal <noreply@3peat.ai>',
         to: ['ryan@3peat.ai', 'mark@3peat.ai'],
         reply_to: email || undefined,
         subject: `${subjectLabel}: ${subjectName}`,
