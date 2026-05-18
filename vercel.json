@@ -1,0 +1,7 @@
+{
+  "buildCommand": "bash build.sh",
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "/portal/:path*", "destination": "/portal/index.html" }
+  ]
+}

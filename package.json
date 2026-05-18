@@ -1,5 +1,9 @@
 {
   "name": "ourlearningportal",
   "version": "1.0.0",
-  "type": "module"
+  "type": "module",
+  "scripts": {
+    "build": "bash build.sh",
+    "dev:portal": "cd portal && npm run dev"
+  }
 }

@@ -7,6 +7,14 @@
       "runtimeArgs": ["serve", "."],
       "port": 5175,
       "autoPort": true
+    },
+    {
+      "name": "portal-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "portal",
+      "port": 5174,
+      "autoPort": true
     }
   ]
 }

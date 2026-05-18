@@ -1,2 +1,5 @@
 .vercel
 .env*.local
+public/
+portal/node_modules/
+portal/dist/
