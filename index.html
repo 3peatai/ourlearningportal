@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -143,6 +143,7 @@ const Icon = ({ name, size = 18, stroke = 1.6, style }) => {
     case 'arrow':   return <svg {...p}><path d="M5 12h14M13 6l6 6-6 6"/></svg>;
     case 'pin':     return <svg {...p}><path d="M12 22s-7-6.5-7-12a7 7 0 1114 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>;
     case 'invoice': return <svg {...p}><path d="M6 3h9l4 4v14a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M9 13h6M9 17h4M9 9h3"/></svg>;
+    case 'bell':   return <svg {...p}><path d="M6 16V11a6 6 0 0112 0v5l2 2H4z"/><path d="M10 20a2 2 0 004 0"/></svg>;
     case 'calendar':return <svg {...p}><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>;
     case 'globe':   return <svg {...p}><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg>;
     default:        return <svg {...p}><circle cx="12" cy="12" r="9"/></svg>;
@@ -540,232 +541,135 @@ const Hero = () => {
 };
 
 // ─── BOOKING FLOW MOCK PANELS ─────────────────────────────────────────────────
-const FlowMockParent = ({ step }) => (
-  <div>
-    <div style={{ fontSize: 10, color: C.ink3, fontFamily: 'JetBrains Mono,monospace', marginBottom: 8, letterSpacing: 0.5 }}>UPCOMING · ETHAN, 9</div>
-    {[
-      { day: 'Thu', time: '4:30', subj: 'Violin · Mr. Chan', state: step >= 1 ? 'moved' : (step === 0 ? 'editing' : 'idle') },
-      { day: 'Sat', time: '10:00', subj: 'Violin · Mr. Chan', state: step >= 1 ? 'new' : 'idle' },
-      { day: 'Mon', time: '5:00', subj: 'Maths · Ms. Lim', state: 'idle' },
-    ].map((s, i) => (
-      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px',
-        borderRadius: 3, marginBottom: 5,
-        background: s.state === 'editing' ? C.aqua : (s.state === 'new' ? 'rgba(127,198,192,.4)' : C.paper),
-        border: `1px solid ${s.state === 'editing' || s.state === 'new' ? C.teal : C.hairline}`,
-        opacity: s.state === 'moved' ? 0.4 : 1, transition: 'all .5s' }}>
-        <div style={{ width: 42, textAlign: 'center' }}>
-          <div style={{ fontSize: 10, fontFamily: 'JetBrains Mono,monospace', color: C.teal, letterSpacing: 0.5 }}>{s.day.toUpperCase()}</div>
-          <div style={{ fontSize: 14, color: C.ink, fontWeight: 500, fontFamily: 'Fraunces,serif' }}>{s.time}</div>
-        </div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 12, fontWeight: 500, color: C.ink, textDecoration: s.state === 'moved' ? 'line-through' : 'none' }}>{s.subj}</div>
-          <div style={{ fontSize: 10, color: C.ink3 }}>30 min · Studio B</div>
-        </div>
-        {s.state === 'editing' && step === 0 && (
-          <span style={{ fontSize: 9, padding: '3px 8px', borderRadius: 2, background: C.teal, color: '#fffcf4', fontWeight: 600, fontFamily: 'JetBrains Mono,monospace', letterSpacing: 0.5 }}>RESCHED</span>
-        )}
+const ParentView = () => {
+  const { openModal } = useModal();
+  const mob = useMobile();
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+        <div style={{ fontSize: 10, color: C.ink3, fontFamily: 'JetBrains Mono,monospace', letterSpacing: 0.5 }}>UPCOMING · ETHAN, 9</div>
+        <button onClick={openModal} style={{ padding: '8px 18px', background: C.teal, color: '#fffcf4', border: 'none', borderRadius: 3, fontSize: 12, fontWeight: 700, fontFamily: 'JetBrains Mono,monospace', letterSpacing: 0.5, cursor: 'pointer' }}>Book Class</button>
       </div>
-    ))}
-  </div>
-);
-
-const FlowMockAdmin = ({ step }) => (
-  <div>
-    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: C.ink3, fontFamily: 'JetBrains Mono,monospace', marginBottom: 10, letterSpacing: 0.5 }}>
-      <span>WK 21</span>
-      <span style={{ color: step >= 1 ? C.teal : C.ink3 }}>{step >= 1 ? '✓ no overlaps' : 'checking…'}</span>
+      {[
+        { day: 'Thu', time: '4:30', subj: 'Violin · Mr. Chan', note: 'Studio B' },
+        { day: 'Sat', time: '10:00', subj: 'Violin · Mr. Chan', note: 'Studio B' },
+        { day: 'Mon', time: '5:00', subj: 'Maths · Ms. Lim', note: 'Room 3' },
+      ].map((s, i) => (
+        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 3, marginBottom: 5, background: C.paper, border: `1px solid ${C.hairline}` }}>
+          <div style={{ width: 42, textAlign: 'center' }}>
+            <div style={{ fontSize: 10, fontFamily: 'JetBrains Mono,monospace', color: C.teal, letterSpacing: 0.5 }}>{s.day.toUpperCase()}</div>
+            <div style={{ fontSize: 14, color: C.ink, fontWeight: 500, fontFamily: 'Fraunces,serif' }}>{s.time}</div>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 12, fontWeight: 500, color: C.ink }}>{s.subj}</div>
+            <div style={{ fontSize: 10, color: C.ink3 }}>30 min · {s.note}</div>
+          </div>
+        </div>
+      ))}
+      <div style={{ marginTop: 10, padding: '10px 14px', borderRadius: 3, background: '#fffcf4', border: `1px solid ${C.hairline}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontSize: 12, color: C.ink2 }}>Invoice · Nov 2025</span>
+        <span style={{ fontFamily: 'Fraunces,serif', fontSize: 13, color: C.teal }}>HK$1,280</span>
+      </div>
     </div>
-    <div style={{ display: 'grid', gridTemplateColumns: '20px repeat(5,1fr)', gap: 3, fontSize: 8, color: C.ink3, fontFamily: 'JetBrains Mono,monospace' }}>
-      <div/>{['M','T','W','T','F'].map((d,i)=><div key={i} style={{ textAlign: 'center' }}>{d}</div>)}
-      {[0,1,2,3,4,5].map(r => (
-        <React.Fragment key={r}>
-          <div style={{ paddingTop: 3 }}>{[9,10,11,12,1,2][r]}</div>
-          {[0,1,2,3,4].map(cc => {
-            const filled   = (r*7 + cc*3) % 9 < 4;
-            const moved    = step >= 1 && r === 1 && cc === 3;
-            const fading   = step === 0 && r === 0 && cc === 2;
-            const conflict = step === 1 && r === 2 && cc === 2;
-            return (
-              <div key={cc} style={{ height: 20, borderRadius: 2,
-                background: moved ? C.teal : conflict ? C.rust : (filled ? C.aqua : 'rgba(28,42,44,.04)'),
-                opacity: fading ? 0.35 : 1,
-                boxShadow: moved ? `0 0 0 2px ${C.teal}66` : 'none', transition: 'all .4s' }}/>
-            );
-          })}
-        </React.Fragment>
+  );
+};
+
+const TeacherView = () => {
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 3, background: 'rgba(12,120,114,0.12)', border: `1px solid ${C.teal}`, marginBottom: 14 }}>
+        <Icon name="bell" size={14} stroke={2} color={C.teal}/>
+        <span style={{ fontSize: 12, fontWeight: 600, color: C.teal }}>New class added to your schedule</span>
+      </div>
+      <div style={{ fontSize: 10, color: C.ink3, fontFamily: 'JetBrains Mono,monospace', letterSpacing: 0.5, marginBottom: 8 }}>THIS WEEK · MR. CHAN</div>
+      {[
+        { day: 'Mon', time: '4:00', student: 'Ethan · Violin', room: 'Studio B', isNew: false },
+        { day: 'Wed', time: '3:30', student: 'Sophie · Violin', room: 'Studio A', isNew: false },
+        { day: 'Thu', time: '4:30', student: 'Ethan · Violin', room: 'Studio B', isNew: false },
+        { day: 'Sat', time: '10:00', student: 'Ethan · Violin', room: 'Studio B', isNew: true },
+      ].map((s, i) => (
+        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 3, marginBottom: 5, background: s.isNew ? 'rgba(127,198,192,.25)' : C.paper, border: `1px solid ${s.isNew ? C.teal : C.hairline}` }}>
+          <div style={{ width: 42, textAlign: 'center' }}>
+            <div style={{ fontSize: 10, fontFamily: 'JetBrains Mono,monospace', color: C.teal, letterSpacing: 0.5 }}>{s.day.toUpperCase()}</div>
+            <div style={{ fontSize: 14, color: C.ink, fontWeight: 500, fontFamily: 'Fraunces,serif' }}>{s.time}</div>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 12, fontWeight: 500, color: C.ink }}>{s.student}</div>
+            <div style={{ fontSize: 10, color: C.ink3 }}>30 min · {s.room}</div>
+          </div>
+          {s.isNew && <span style={{ fontSize: 9, padding: '3px 8px', borderRadius: 2, background: C.teal, color: '#fffcf4', fontWeight: 600, fontFamily: 'JetBrains Mono,monospace', letterSpacing: 0.5 }}>NEW</span>}
+        </div>
       ))}
     </div>
-    <div style={{ marginTop: 12, padding: 10, borderRadius: 3, background: C.paper, border: `1px solid ${C.hairline}` }}>
-      <div style={{ fontSize: 10, fontWeight: 600, color: C.ink, marginBottom: 6, fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1 }}>AUTO-CHECK</div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 6, fontSize: 10, color: C.ink2 }}>
-        <span style={{ color: step >= 1 ? C.teal : C.ink3 }}>✓ teacher</span>
-        <span style={{ color: step >= 1 ? C.teal : C.ink3 }}>✓ room</span>
-        <span style={{ color: step >= 1 ? C.teal : C.ink3 }}>✓ sibling</span>
-      </div>
-    </div>
-    {step >= 4 && (
-      <div style={{ marginTop: 8, padding: 10, borderRadius: 3, background: C.teal, color: '#fffcf4', fontSize: 11, fontFamily: 'Fraunces,serif' }}>
-        <em>Invoice rolled</em> · Chow family · sent
-      </div>
-    )}
-  </div>
-);
+  );
+};
 
-const FlowMockTeacher = ({ step }) => (
-  <div>
-    <div style={{ fontSize: 10, color: C.ink3, fontFamily: 'JetBrains Mono,monospace', marginBottom: 8, letterSpacing: 0.5 }}>MR. CHAN · TODAY</div>
-    <div style={{ padding: 12, borderRadius: 3,
-      background: step >= 2 ? C.aqua : C.paper,
-      border: `1px solid ${step >= 2 ? C.teal : C.hairline}`,
-      transition: 'all .4s', marginBottom: 6 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ fontSize: 13, fontWeight: 500, color: C.ink, fontFamily: 'Fraunces,serif' }}>Sat 10:00 · Ethan</div>
-        {step >= 3 && <span style={{ fontSize: 9, padding: '2px 8px', borderRadius: 2, background: C.teal, color: '#fffcf4', fontWeight: 600, fontFamily: 'JetBrains Mono,monospace', letterSpacing: 0.5 }}>DONE</span>}
+const AdminView = () => {
+  return (
+    <div>
+      <div style={{ fontSize: 10, color: C.ink3, fontFamily: 'JetBrains Mono,monospace', letterSpacing: 0.5, marginBottom: 10 }}>NOVEMBER 2025 · OVERVIEW</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
+        {[
+          { label: 'Active students', value: '47' },
+          { label: 'Sessions this week', value: '138' },
+          { label: 'Invoices pending', value: '12' },
+          { label: 'Attendance rate', value: '94%' },
+        ].map((s, i) => (
+          <div key={i} style={{ padding: '10px 12px', borderRadius: 3, background: '#fffcf4', border: `1px solid ${C.hairline}` }}>
+            <div style={{ fontFamily: 'Fraunces,serif', fontSize: 22, fontWeight: 300, color: C.teal, lineHeight: 1 }}>{s.value}</div>
+            <div style={{ fontSize: 10, color: C.ink2, marginTop: 4 }}>{s.label}</div>
+          </div>
+        ))}
       </div>
-      <div style={{ fontSize: 10, color: C.ink3, marginTop: 2 }}>Violin · Grade 4 prep</div>
-      {step >= 2 && (
-        <div style={{ marginTop: 8, padding: 8, borderRadius: 3, background: '#fffcf4' }}>
-          <div style={{ fontSize: 9, fontWeight: 600, color: C.teal, marginBottom: 4, fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1 }}>PINNED NOTES</div>
-          <div style={{ fontSize: 11, color: C.ink2, lineHeight: 1.45, fontFamily: 'Fraunces,serif' }}>Bowing on bars 12-16. Slow practice w/ metronome 60. Loved Vivaldi excerpt.</div>
+      {[
+        { text: 'Invoice #2091 sent to Wong Family', time: '9:14 am' },
+        { text: 'Ethan · Violin rescheduled to Sat', time: '8:42 am' },
+        { text: 'Sophie · Piano marked present', time: '8:30 am' },
+      ].map((a, i) => (
+        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '9px 0', borderBottom: `1px solid ${C.hairline}`, fontSize: 12, color: C.ink2 }}>
+          <span>{a.text}</span>
+          <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: C.ink3 }}>{a.time}</span>
         </div>
-      )}
+      ))}
     </div>
-    <div style={{ padding: 10, borderRadius: 3, background: C.paper, border: `1px solid ${C.hairline}` }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: 10, color: C.ink3, fontFamily: 'JetBrains Mono,monospace', letterSpacing: 0.5 }}>MAY</span>
-        <span style={{ fontSize: 14, color: C.ink, fontFamily: 'Fraunces,serif' }}>
-          HK$ <em style={{ color: C.teal }}>{step >= 4 ? '42,580' : '42,180'}</em>
-        </span>
-      </div>
-      {step >= 4 && <div style={{ marginTop: 4, fontSize: 10, color: C.teal, fontFamily: 'JetBrains Mono,monospace', letterSpacing: 0.5 }}>PAYSLIP QUEUED ✓</div>}
-    </div>
-  </div>
-);
+  );
+};
 
-// ─── BOOKING FLOW ─────────────────────────────────────────────────────────────
+const BF_TABS = [
+  { key: 'parent',  label: 'Parent' },
+  { key: 'teacher', label: 'Teacher' },
+  { key: 'admin',   label: 'Admin' },
+];
+
 const BookingFlow = () => {
   const mob = useMobile();
-  const [step, setStep] = useAutoCycle(COPY.bookingFlow.length, 3000);
-  const flow = COPY.bookingFlow;
-  const current = flow[step];
-
-  const MockFor = ({ m }) => {
-    if (m === 'parent')  return <FlowMockParent step={step}/>;
-    if (m === 'admin')   return <FlowMockAdmin step={step}/>;
-    return <FlowMockTeacher step={step}/>;
-  };
-
+  const [tab, setTab] = useState(0);
+  const views = [ParentView, TeacherView, AdminView];
+  const ViewFor = views[tab];
   return (
     <section id="how-it-works" style={{ padding: mob ? '40px 20px' : '80px 64px', position: 'relative' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 20 : 60, marginBottom: 48, alignItems: 'flex-end' }}>
-        <div>
-          <Tag style={{ marginBottom: 18 }}>The Booking, Reimagined</Tag>
-          <h2 style={{ fontFamily: 'Fraunces,serif', fontWeight: 300,
-            fontSize: mob ? 40 : 64, lineHeight: 1.0, letterSpacing: mob ? -1.4 : -2.2, color: C.ink, margin: '12px 0 0' }}>
-            One tap from a parent.<br/>
-            <span style={{ fontStyle: 'italic', color: C.teal }}>Everything else</span><br/>
-            moves on its own.
-          </h2>
-        </div>
-        <p style={{ fontSize: mob ? 14 : 16, lineHeight: 1.65, color: C.ink2, margin: 0, alignSelf: 'flex-end' }}>
-          A typical Tuesday at <em style={{ fontFamily: 'Fraunces,serif' }}>Harbourside Music</em>. Rachel needs to move her son's violin from Thursday to Saturday. That's where the work ends, for her. Here's what happens next.
-        </p>
+      <div style={{ marginBottom: 40 }}>
+        <Tag style={{ marginBottom: 18 }}>The Booking, Reimagined</Tag>
+        <h2 style={{ fontFamily: 'Fraunces,serif', fontWeight: 300,
+          fontSize: mob ? 40 : 64, lineHeight: 1.0, letterSpacing: mob ? -1.4 : -2.2, color: C.ink, margin: '12px 0 0' }}>
+          One tap from a parent.<br/>
+          <span style={{ fontStyle: 'italic', color: C.teal }}>Everything else</span><br/>
+          moves on its own.
+        </h2>
       </div>
-
       <Card style={{ padding: mob ? 16 : 32, background: C.paper2 }}>
-        {/* Module panels */}
-        <div style={{ display: 'grid',
-          gridTemplateColumns: mob ? '1fr' : '1fr 1fr 1fr',
-          gap: mob ? 12 : 20, marginBottom: 24 }}>
-          {['parent','admin','teacher'].map((m, mi) => {
-            const active = current.icon === m;
-            if (mob && !active) return null;
-            return (
-              <div key={m} style={{ background: '#fffcf4', borderRadius: 4,
-                border: `1px solid ${active ? C.teal : C.hairline}`,
-                padding: mob ? 16 : 20, position: 'relative',
-                transform: active ? 'translateY(-4px)' : 'none',
-                transition: 'all .5s',
-                boxShadow: active
-                  ? `0 0 0 4px ${C.aqua}66,0 14px 36px rgba(12,120,114,.18)`
-                  : '0 1px 0 rgba(255,255,255,.6) inset,0 4px 14px rgba(20,30,30,.06)',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ width: 28, height: 28, borderRadius: 14,
-                      background: active ? C.teal : C.paper2, color: active ? '#fffcf4' : C.teal,
-                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Icon name={m} size={14} stroke={2}/>
-                    </span>
-                    <span style={{ fontFamily: 'Fraunces,serif', fontSize: 17, fontWeight: 500, color: C.ink, letterSpacing: -0.2 }}>
-                      {m[0].toUpperCase()+m.slice(1)}
-                    </span>
-                  </div>
-                  <span style={{ fontSize: 10, fontFamily: 'JetBrains Mono,monospace', color: C.ink3, letterSpacing: 0.5 }}>
-                    {['MOBILE','WEB','MOBILE'][mi]}
-                  </span>
-                </div>
-                <MockFor m={m}/>
-              </div>
-            );
-          })}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', borderBottom: `1px solid ${C.hairline}`, marginBottom: 24 }}>
+          {BF_TABS.map((t, idx) => (
+            <button key={t.key} onClick={() => setTab(idx)} style={{ padding: mob ? '10px 4px' : '14px 20px', background: 'transparent', border: 'none', borderBottom: `2px solid ${tab === idx ? C.teal : 'transparent'}`, cursor: 'pointer', transition: 'border-color .2s', marginBottom: -1, textAlign: 'center' }}>
+              <span style={{ fontFamily: 'Fraunces,serif', fontSize: mob ? 17 : 20, color: tab === idx ? C.teal : C.ink2 }}>{t.label}</span>
+            </button>
+          ))}
         </div>
-
-        {/* Timeline */}
-        <div style={{ position: 'relative', marginTop: 32, overflowX: mob ? 'auto' : 'visible', paddingBottom: mob ? 4 : 0 }}>
-          <div style={{ minWidth: mob ? 480 : 'auto' }}>
-            <div style={{ position: 'absolute', top: 14, left: 0, right: 0, height: 1, background: C.hairline }}/>
-            <div style={{ position: 'absolute', top: 14, left: 0, height: 1, background: C.teal,
-              width: `${(step/(flow.length-1))*100}%`, transition: 'width .5s' }}/>
-            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${flow.length},1fr)`, position: 'relative' }}>
-              {flow.map((s, i) => {
-                const done = i < step, here = i === step;
-                return (
-                  <button key={i} onClick={() => setStep(i)} style={{ background: 'transparent', border: 'none',
-                    textAlign: 'left', padding: '0 12px 0 0', position: 'relative' }}>
-                    <span style={{ display: 'block', width: 14, height: 14, borderRadius: 7,
-                      background: here ? C.teal : done ? C.aqua : C.paper,
-                      border: `2px solid ${here || done ? C.teal : C.hairline}`,
-                      transition: 'all .3s', marginBottom: 12 }}/>
-                    <div style={{ fontSize: 10, fontFamily: 'JetBrains Mono,monospace', color: C.ink3, letterSpacing: 1, marginBottom: 4 }}>
-                      {String(i+1).padStart(2,'0')} · {s.who}
-                    </div>
-                    <div style={{ fontFamily: 'Fraunces,serif', fontSize: mob ? 13 : 16,
-                      color: here ? C.teal : C.ink, fontStyle: here ? 'italic' : 'normal',
-                      fontWeight: 400, lineHeight: 1.2 }}>
-                      {s.title}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Caption */}
-        <div style={{ marginTop: 32, padding: mob ? 16 : 24, background: '#fffcf4', borderRadius: 4, border: `1px solid ${C.hairline}` }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: mob ? 14 : 20, alignItems: 'center' }}>
-            <div style={{ width: mob ? 48 : 64, height: mob ? 48 : 64, borderRadius: 32, background: C.teal,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fffcf4', flexShrink: 0 }}>
-              <Icon name={current.icon} size={mob ? 22 : 28} stroke={1.8}/>
-            </div>
-            <div>
-              <div style={{ fontSize: 11, fontFamily: 'JetBrains Mono,monospace', color: C.teal, letterSpacing: 1.2 }}>
-                {current.who.toUpperCase()} · STEP {String(step+1).padStart(2,'0')} OF {String(flow.length).padStart(2,'0')}
-              </div>
-              <div style={{ fontFamily: 'Fraunces,serif', fontSize: mob ? 20 : 26, fontWeight: 400, color: C.ink, letterSpacing: -0.5, margin: '4px 0 6px' }}>
-                {current.title}
-              </div>
-              <div style={{ fontSize: mob ? 13 : 14, color: C.ink2, lineHeight: 1.55 }}>{current.detail}</div>
-            </div>
-          </div>
-        </div>
+        <ViewFor/>
       </Card>
     </section>
   );
 };
-
-// ─── MODULE PREVIEWS ──────────────────────────────────────────────────────────
 const ParentPreview = () => (
   <Card style={{ padding: 22 }}>
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18 }}>
@@ -901,7 +805,7 @@ const AdminPreview = () => (
 // ─── MODULES SECTION ──────────────────────────────────────────────────────────
 const Modules = () => {
   const mob = useMobile();
-  const [i, setI] = useAutoCycle(COPY.modules.length, 4200);
+  const [i, setI] = useState(0);
   const m = COPY.modules[i];
   const PreviewFor = ({ k }) => {
     if (k === 'parent')  return <ParentPreview/>;
@@ -924,10 +828,9 @@ const Modules = () => {
       </div>
 
       {/* Tab rail */}
-      <div style={{ display: 'flex', gap: 0, borderBottom: `1px solid ${C.hairline}`, marginBottom: 32,
-        overflowX: mob ? 'auto' : 'visible' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', borderBottom: `1px solid ${C.hairline}`, marginBottom: 32 }}>
         {COPY.modules.map((mod, idx) => (
-          <button key={mod.key} onClick={() => setI(idx)} style={{ flex: mob ? 'none' : 1, minWidth: mob ? 140 : 'auto',
+          <button key={mod.key} onClick={() => setI(idx)} style={{ width: '100%',
             textAlign: 'left', padding: mob ? '14px 16px' : '20px 24px',
             background: 'transparent', border: 'none',
             borderBottom: `2px solid ${i === idx ? C.teal : 'transparent'}`,
@@ -1140,19 +1043,7 @@ const Invoicing = () => {
       <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '0.95fr 1.05fr', gap: 40, alignItems: 'start' }}>
         {/* LEFT */}
         <div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 28 }}>
-            {[
-              { stat: '4 hrs',  label: 'saved per admin per week, on average' },
-              { stat: '0',      label: 'invoices manually re-written at month end' },
-              { stat: '94%',    label: 'invoices reconciled without admin touching them' },
-              { stat: '2 days', label: 'faster cash collection, on the data we see' },
-            ].map((s, si) => (
-              <div key={si} style={{ padding: 20, borderRadius: 4, background: '#fffcf4', border: `1px solid ${C.hairline}` }}>
-                <div style={{ fontFamily: 'Fraunces,serif', fontSize: mob ? 28 : 38, fontWeight: 300, color: C.teal, letterSpacing: -1.2, lineHeight: 1 }}>{s.stat}</div>
-                <div style={{ fontSize: 12, color: C.ink2, marginTop: 8, lineHeight: 1.5 }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
+          
           <div style={{ borderTop: `1px solid ${C.hairline}` }}>
             {[
               { n: '01', t: 'Built from attendance, not a spreadsheet', b: "Every session a teacher marks complete becomes a line on the parent's invoice. Reschedules, make-ups and trial lessons are priced by your own rules." },
