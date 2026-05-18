@@ -61,8 +61,10 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const err = await response.text();
-      console.error('Resend error:', err);
-      return res.status(500).json({ error: 'Email failed to send' });
+      let parsed = {};
+      try { parsed = JSON.parse(err); } catch (_) {}
+      console.error(`Resend ${response.status} [${parsed.name || 'unknown'}]: ${parsed.message || err}`);
+      return res.status(500).json({ error: 'Email failed to send', resend: parsed });
     }
 
     return res.status(200).json({ ok: true });
