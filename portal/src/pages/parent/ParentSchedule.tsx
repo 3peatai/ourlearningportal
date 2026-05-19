@@ -53,6 +53,22 @@ function isSameDay(a: Date, b: Date) {
     && a.getDate() === b.getDate()
 }
 
+/** Parse "10:00 AM" / "2:30 PM" → { h, m } in 24-hour */
+function parseHKTime(displayTime: string): { h: number; m: number } {
+  const parts = displayTime.trim().split(' ')
+  const [hStr, mStr] = parts[0].split(':')
+  let h = parseInt(hStr, 10)
+  const m = parseInt(mStr ?? '0', 10)
+  if (parts[1] === 'PM' && h !== 12) h += 12
+  if (parts[1] === 'AM' && h === 12) h = 0
+  return { h, m }
+}
+
+function sessionMins(s: CalendarSession): number {
+  const { h, m } = parseHKTime(s.displayTime)
+  return h * 60 + m
+}
+
 function fmtHourLabel(h: number) {
   if (h === 12) return '12pm'
   if (h > 12)   return `${h - 12}pm`
@@ -69,19 +85,17 @@ function weekDays(monday: Date): Date[] {
 
 // Greedy column-assignment for overlapping sessions within one day
 function columnLayout(daySessions: CalendarSession[]) {
-  const sorted = [...daySessions].sort(
-    (a, b) => (a.hktHour ?? 0) * 60 + (a.hktMin ?? 0) - ((b.hktHour ?? 0) * 60 + (b.hktMin ?? 0))
-  )
+  const sorted = [...daySessions].sort((a, b) => sessionMins(a) - sessionMins(b))
   const result: { s: CalendarSession; col: number; totalCols: number }[] = []
 
   for (const s of sorted) {
-    const start = (s.hktHour ?? 0) * 60 + (s.hktMin ?? 0)
+    const start = sessionMins(s)
     const end   = start + s.durationMin
     let col = 0
     while (result.some(r =>
       r.col === col
-      && (r.s.hktHour ?? 0) * 60 + (r.s.hktMin ?? 0) < end
-      && (r.s.hktHour ?? 0) * 60 + (r.s.hktMin ?? 0) + r.s.durationMin > start
+      && sessionMins(r.s) < end
+      && sessionMins(r.s) + r.s.durationMin > start
     )) {
       col++
     }
@@ -90,14 +104,14 @@ function columnLayout(daySessions: CalendarSession[]) {
 
   // patch totalCols
   for (const item of result) {
-    const start = (item.s.hktHour ?? 0) * 60 + (item.s.hktMin ?? 0)
+    const start = sessionMins(item.s)
     const end   = start + item.s.durationMin
     const maxCol = Math.max(
       item.col,
       ...result
         .filter(r => r.s !== item.s
-          && (r.s.hktHour ?? 0) * 60 + (r.s.hktMin ?? 0) < end
-          && (r.s.hktHour ?? 0) * 60 + (r.s.hktMin ?? 0) + r.s.durationMin > start)
+          && sessionMins(r.s) < end
+          && sessionMins(r.s) + r.s.durationMin > start)
         .map(r => r.col),
     )
     item.totalCols = maxCol + 1
@@ -396,8 +410,7 @@ function WeekView({ sessions, cursor, onSelect }: {
 
                   {/* Session blocks */}
                   {layout.map(({ s, col, totalCols }) => {
-                    const hktHour  = s.hktHour ?? GRID_START
-                    const hktMin   = s.hktMin  ?? 0
+                    const { h: hktHour, m: hktMin } = parseHKTime(s.displayTime)
                     const topPx    = (hktHour - GRID_START) * HOUR_H + (hktMin / 60) * HOUR_H
                     const heightPx = Math.max((s.durationMin / 60) * HOUR_H - 3, 16)
                     const pctW     = 100 / totalCols
