@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, Users, Calendar, Receipt,
-  UserCheck, TrendingDown, Menu, X, LogOut, ChevronRight, BookMarked,
+  UserCheck, TrendingDown, Menu, LogOut, ChevronRight, BookMarked,
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { R } from '../../lib/routes'
