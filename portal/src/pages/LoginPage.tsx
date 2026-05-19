@@ -1,23 +1,8 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
+import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { useAuth } from '../context/AuthContext'
 import { R } from '../lib/routes'
-
-const schema = z.object({
-  email:    z.string().email('Enter a valid email'),
-  password: z.string().min(1, 'Password is required'),
-})
-type FormData = z.infer<typeof schema>
-
-const ROLE_TABS = ['PARENT', 'TEACHER', 'ADMIN'] as const
-const HINTS: Record<string, string> = {
-  PARENT:  'sarah.lam@hkmail.com / parent123',
-  TEACHER: 'beverly@ourlearningportal.com / teacher123',
-  ADMIN:   'admin@ourlearningportal.com / admin123',
-}
 
 // OLP colours
 const OLP = {
@@ -137,7 +122,7 @@ interface RoleCardProps {
   tagline: string
   accent: string
   lightBg: string
-  preview: React.ReactNode
+  preview: ReactNode
   features: string[]
   email: string
   password: string
@@ -206,11 +191,30 @@ function RoleCard({ role, title, tagline, accent, lightBg, preview, features, em
 
 // ─── Login page ───────────────────────────────────────────────────────────────
 
+const QUICK_ROLES = [
+  {
+    role: 'Parent', emoji: '👨‍👩‍👧', accent: OLP.aqua, lightBg: '#eef7f6',
+    tagline: "Track your child's sessions, invoices and progress.",
+    email: 'sarah.lam@hkmail.com', password: 'parent123',
+    path: '/portal/parent/dashboard',
+  },
+  {
+    role: 'Teacher', emoji: '👩‍🏫', accent: OLP.teal, lightBg: '#eef7f6',
+    tagline: 'Weekly schedule, earnings, availability and payslips.',
+    email: 'beverly@ourlearningportal.com', password: 'teacher123',
+    path: '/portal/teacher/dashboard',
+  },
+  {
+    role: 'Admin', emoji: '⚙️', accent: OLP.rust, lightBg: '#fdf0ea',
+    tagline: 'Students, invoices, teachers, calendar — full control.',
+    email: 'admin@ourlearningportal.com', password: 'admin123',
+    path: '/portal/admin/dashboard',
+  },
+]
+
 export default function LoginPage() {
   const { login, user } = useAuth()
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState<'PARENT' | 'TEACHER' | 'ADMIN'>('PARENT')
-  const [serverError, setServerError] = useState('')
   const demoRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -219,18 +223,9 @@ export default function LoginPage() {
     navigate(dest, { replace: true })
   }, [user, navigate])
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({ resolver: zodResolver(schema) })
-
-  async function onSubmit(data: FormData) {
-    setServerError('')
-    try { await login(data.email, data.password) }
-    catch { setServerError('Invalid email or password') }
-  }
-
   async function quickLogin(email: string, password: string) {
-    setServerError('')
     try { await login(email, password) }
-    catch { setServerError('Invalid email or password') }
+    catch { /* credentials are hardcoded and correct */ }
   }
 
   const ROLES: Omit<RoleCardProps, 'onQuickLogin'>[] = [
@@ -238,14 +233,14 @@ export default function LoginPage() {
       role: 'Parent', title: 'Parent Portal', tagline: "Stay connected with your child's learning",
       accent: OLP.aqua, lightBg: '#eef7f6',
       preview: <ParentPreview />,
-      features: ['View upcoming sessions and full booking history', 'Reschedule or cancel classes with ease', 'Enrol children in new programmes', 'View and track invoices', 'Monitor progress across subjects'],
+      features: ['View upcoming sessions and full booking history', 'Reschedule or cancel classes with ease', 'View and track invoices', 'Monitor progress across subjects'],
       email: 'sarah.lam@hkmail.com', password: 'parent123',
     },
     {
       role: 'Teacher', title: 'Teacher Portal', tagline: 'Everything you need to teach effectively',
       accent: OLP.teal, lightBg: '#eef7f6',
       preview: <TeacherPreview />,
-      features: ['View your full weekly teaching schedule', 'Mark sessions complete or flag for makeup', 'Access student notes and learning history', 'Track earnings and download payslips', 'Set and update your availability'],
+      features: ['View your full weekly teaching schedule', 'Mark sessions complete or flag for makeup', 'Track earnings and download payslips', 'Set and update your availability'],
       email: 'beverly@ourlearningportal.com', password: 'teacher123',
     },
     {
@@ -260,63 +255,60 @@ export default function LoginPage() {
   return (
     <div style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
 
-      {/* ── Hero / Login ── */}
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 16, background: `linear-gradient(135deg, ${OLP.aqua} 0%, ${OLP.rust} 50%, ${OLP.teal} 100%)` }}>
-        <div style={{ width: '100%', maxWidth: 360 }}>
+      {/* ── Hero: one-click role selection ── */}
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 20px', background: `linear-gradient(135deg, ${OLP.aqua} 0%, ${OLP.rust} 50%, ${OLP.teal} 100%)` }}>
+        <div style={{ width: '100%', maxWidth: 480 }}>
 
-          {/* Logo / wordmark */}
-          <div style={{ textAlign: 'center', marginBottom: 28 }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, borderRadius: 16, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)', marginBottom: 10, padding: '10px 20px' }}>
-              <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
-                <circle cx="14" cy="14" r="12" stroke={OLP.teal} strokeWidth="1.6"/>
-                <circle cx="14" cy="14" r="6" fill={OLP.teal}/>
-                <circle cx="22" cy="14" r="1.6" fill={OLP.teal}/>
+          {/* Logo */}
+          <div style={{ textAlign: 'center', marginBottom: 36 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, borderRadius: 16, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)', marginBottom: 12, padding: '10px 22px' }}>
+              <svg width="26" height="26" viewBox="0 0 64 64" fill="none">
+                <path d="M8 56 V32 a24 24 0 0 1 48 0 V56" stroke={OLP.teal} strokeWidth="3" strokeLinecap="round" fill="none"/>
+                <path d="M18 56 V34 a14 14 0 0 1 28 0 V56" stroke={OLP.teal} strokeWidth="2.4" strokeLinecap="round" fill="none" opacity="0.55"/>
+                <line x1="6" y1="56" x2="58" y2="56" stroke={OLP.teal} strokeWidth="3" strokeLinecap="round"/>
+                <circle cx="32" cy="34" r="3.2" fill="#b85e3a"/>
               </svg>
-              <span style={{ fontWeight: 600, fontSize: 15, letterSpacing: -0.3, color: OLP.ink }}>Our Learning</span>
-              <span style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: 17, color: OLP.teal, letterSpacing: -0.2 }}>portal</span>
+              <span style={{ fontWeight: 600, fontSize: 16, letterSpacing: -0.3, color: OLP.ink }}>Our Learning</span>
+              <span style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: 19, color: OLP.teal, letterSpacing: -0.2 }}>portal</span>
             </div>
-            <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, margin: 0 }}>
-              Parent &amp; Teacher Portal — Demo
+            <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, margin: 0, fontWeight: 500 }}>
+              Choose a view to explore the demo
             </p>
           </div>
 
-          {/* Card */}
-          <div style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(12px)', borderRadius: 24, padding: 24, border: '1px solid rgba(255,255,255,0.3)', boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }}>
-
-            {/* Role tabs */}
-            <div style={{ display: 'flex', gap: 4, background: 'rgba(0,0,0,0.1)', borderRadius: 12, padding: 4, marginBottom: 20 }}>
-              {ROLE_TABS.map(role => (
-                <button key={role} type="button" onClick={() => setActiveTab(role)} style={{ flex: 1, fontSize: 12, fontWeight: 700, padding: '7px 0', borderRadius: 8, border: 'none', cursor: 'pointer', transition: 'all 0.15s', background: activeTab === role ? '#fff' : 'transparent', color: activeTab === role ? OLP.ink : 'rgba(255,255,255,0.7)', boxShadow: activeTab === role ? '0 1px 4px rgba(0,0,0,0.12)' : 'none' }}>
-                  {role === 'ADMIN' ? 'Admin' : role === 'TEACHER' ? 'Teacher' : 'Parent'}
-                </button>
-              ))}
-            </div>
-
-            <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div>
-                <label style={{ display: 'block', color: 'rgba(255,255,255,0.8)', fontSize: 11, fontWeight: 600, marginBottom: 4 }}>Email</label>
-                <input {...register('email')} type="email" autoComplete="email" placeholder={HINTS[activeTab].split(' / ')[0]} style={{ width: '100%', padding: '11px 14px', borderRadius: 12, background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.3)', color: '#fff', fontSize: 13, outline: 'none', boxSizing: 'border-box' }} />
-                {errors.email && <p style={{ color: '#FCA5A5', fontSize: 11, margin: '4px 0 0' }}>{errors.email.message}</p>}
-              </div>
-              <div>
-                <label style={{ display: 'block', color: 'rgba(255,255,255,0.8)', fontSize: 11, fontWeight: 600, marginBottom: 4 }}>Password</label>
-                <input {...register('password')} type="password" autoComplete="current-password" placeholder="••••••••" style={{ width: '100%', padding: '11px 14px', borderRadius: 12, background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.3)', color: '#fff', fontSize: 13, outline: 'none', boxSizing: 'border-box' }} />
-                {errors.password && <p style={{ color: '#FCA5A5', fontSize: 11, margin: '4px 0 0' }}>{errors.password.message}</p>}
-              </div>
-
-              {serverError && <p style={{ color: '#FCA5A5', fontSize: 12, textAlign: 'center', background: 'rgba(239,68,68,0.2)', borderRadius: 8, padding: '8px 0', margin: 0 }}>{serverError}</p>}
-
-              <button type="submit" disabled={isSubmitting} style={{ width: '100%', padding: '12px 0', borderRadius: 12, background: '#fff', border: 'none', fontWeight: 700, color: OLP.ink, fontSize: 14, cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', opacity: isSubmitting ? 0.6 : 1, transition: 'opacity 0.15s' }}>
-                {isSubmitting ? 'Signing in…' : 'Sign In'}
+          {/* One-click role cards */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {QUICK_ROLES.map(r => (
+              <button
+                key={r.role}
+                onClick={() => quickLogin(r.email, r.password)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 16,
+                  width: '100%', padding: '18px 22px', borderRadius: 18,
+                  background: 'rgba(255,255,255,0.18)', backdropFilter: 'blur(12px)',
+                  border: '1.5px solid rgba(255,255,255,0.32)',
+                  cursor: 'pointer', textAlign: 'left',
+                  transition: 'background .18s, border-color .18s',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.28)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.55)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.18)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.32)' }}
+              >
+                <div style={{ width: 46, height: 46, borderRadius: 14, background: r.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
+                  {r.emoji}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: 20, color: '#fff', fontWeight: 400, letterSpacing: -0.3, lineHeight: 1.1 }}>{r.role}</div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', marginTop: 3, lineHeight: 1.4 }}>{r.tagline}</div>
+                </div>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0 }}>
+                  <path d="M7 5l5 5-5 5" stroke="rgba(255,255,255,0.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </button>
-            </form>
-
-            <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, textAlign: 'center', marginTop: 12, marginBottom: 0 }}>
-              Demo: {HINTS[activeTab]}
-            </p>
+            ))}
           </div>
 
-          <button onClick={() => demoRef.current?.scrollIntoView({ behavior: 'smooth' })} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, margin: '28px auto 0', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.6)', fontSize: 11, fontWeight: 600 }}>
+          <button onClick={() => demoRef.current?.scrollIntoView({ behavior: 'smooth' })} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, margin: '32px auto 0', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.55)', fontSize: 11, fontWeight: 600 }}>
             Platform overview
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ animation: 'bounce 1.8s infinite' }}>
               <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import {
   format, startOfMonth, getDaysInMonth, getDay,
-  addMonths, subMonths,
+  addMonths, subMonths, addDays, startOfWeek, getISOWeek,
 } from 'date-fns'
 import toast from 'react-hot-toast'
 import { useParentSessions } from '../../hooks/parent'
@@ -16,6 +16,8 @@ import BottomNav from '../../components/nav/BottomNav'
 import { BB } from '../../lib/bb'
 import { R } from '../../lib/routes'
 
+type ViewMode = 'week' | 'month'
+
 const PARENT_TABS = [
   { key: 'home',  path: R.PARENT_DASHBOARD, icon: 'home',     label: 'Home'     },
   { key: 'sched', path: R.PARENT_SCHEDULE,  icon: 'calendar', label: 'Schedule' },
@@ -24,6 +26,16 @@ const PARENT_TABS = [
 ]
 
 const DAY_HEADERS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
+const DAY_SHORT   = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+
+// Week grid constants
+const GRID_START = 9    // 9 am
+const GRID_END   = 21   // 9 pm
+const HOUR_H     = 72   // px per hour
+const TIME_COL   = 52   // px for time label column
+const HOURS      = Array.from({ length: GRID_END - GRID_START }, (_, i) => i + GRID_START)
+const TOTAL_H    = (GRID_END - GRID_START) * HOUR_H
 
 interface CalendarCell {
   dayNum: number
@@ -31,6 +43,67 @@ interface CalendarCell {
   dateStr: string
   daySessions: CalendarSession[]
   isToday: boolean
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function isSameDay(a: Date, b: Date) {
+  return a.getFullYear() === b.getFullYear()
+    && a.getMonth() === b.getMonth()
+    && a.getDate() === b.getDate()
+}
+
+function fmtHourLabel(h: number) {
+  if (h === 12) return '12pm'
+  if (h > 12)   return `${h - 12}pm`
+  return `${h}am`
+}
+
+function getMonday(d: Date): Date {
+  return startOfWeek(d, { weekStartsOn: 1 })
+}
+
+function weekDays(monday: Date): Date[] {
+  return Array.from({ length: 7 }, (_, i) => addDays(monday, i))
+}
+
+// Greedy column-assignment for overlapping sessions within one day
+function columnLayout(daySessions: CalendarSession[]) {
+  const sorted = [...daySessions].sort(
+    (a, b) => (a.hktHour ?? 0) * 60 + (a.hktMin ?? 0) - ((b.hktHour ?? 0) * 60 + (b.hktMin ?? 0))
+  )
+  const result: { s: CalendarSession; col: number; totalCols: number }[] = []
+
+  for (const s of sorted) {
+    const start = (s.hktHour ?? 0) * 60 + (s.hktMin ?? 0)
+    const end   = start + s.durationMin
+    let col = 0
+    while (result.some(r =>
+      r.col === col
+      && (r.s.hktHour ?? 0) * 60 + (r.s.hktMin ?? 0) < end
+      && (r.s.hktHour ?? 0) * 60 + (r.s.hktMin ?? 0) + r.s.durationMin > start
+    )) {
+      col++
+    }
+    result.push({ s, col, totalCols: 1 })
+  }
+
+  // patch totalCols
+  for (const item of result) {
+    const start = (item.s.hktHour ?? 0) * 60 + (item.s.hktMin ?? 0)
+    const end   = start + item.s.durationMin
+    const maxCol = Math.max(
+      item.col,
+      ...result
+        .filter(r => r.s !== item.s
+          && (r.s.hktHour ?? 0) * 60 + (r.s.hktMin ?? 0) < end
+          && (r.s.hktHour ?? 0) * 60 + (r.s.hktMin ?? 0) + r.s.durationMin > start)
+        .map(r => r.col),
+    )
+    item.totalCols = maxCol + 1
+  }
+
+  return result
 }
 
 // ─── Slot picker ──────────────────────────────────────────────────────────────
@@ -220,14 +293,188 @@ function SlotPickerSheet({
   )
 }
 
+// ─── Week View ────────────────────────────────────────────────────────────────
+
+function WeekView({ sessions, cursor, onSelect }: {
+  sessions: CalendarSession[]
+  cursor: Date
+  onSelect: (s: CalendarSession) => void
+}) {
+  const monday = getMonday(cursor)
+  const days   = weekDays(monday)
+  const today  = new Date()
+
+  const sessionsByDay = useMemo(() => {
+    return days.map(d => {
+      const ds = format(d, 'yyyy-MM-dd')
+      return sessions.filter(s => s.date === ds)
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessions, format(monday, 'yyyy-MM-dd')])
+
+  return (
+    <div style={{
+      background: 'rgba(255,255,255,.72)', backdropFilter: 'blur(16px)',
+      borderRadius: 16, overflow: 'hidden',
+      border: '1px solid rgba(255,255,255,.6)', marginTop: 10,
+    }}>
+      <div style={{ overflowX: 'auto' }}>
+        <div style={{ minWidth: 360, display: 'flex', flexDirection: 'column' }}>
+
+          {/* Column headers */}
+          <div style={{ display: 'flex', borderBottom: '1px solid rgba(0,0,0,.08)', background: 'rgba(255,255,255,.5)' }}>
+            <div style={{ width: TIME_COL, flexShrink: 0 }} />
+            {days.map((d, i) => {
+              const isToday = isSameDay(d, today)
+              return (
+                <div key={i} style={{ flex: 1, textAlign: 'center', padding: '8px 4px', minWidth: 0 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: BB.inkMute, textTransform: 'uppercase' }}>
+                    {DAY_SHORT[i]}
+                  </div>
+                  <div style={{
+                    width: 24, height: 24, borderRadius: '50%',
+                    margin: '2px auto 0',
+                    background: isToday ? BB.amber : 'transparent',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <span style={{ fontSize: 13, fontWeight: isToday ? 800 : 600, color: isToday ? '#fff' : BB.ink }}>
+                      {d.getDate()}
+                    </span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Body: time labels + 7 day columns */}
+          <div style={{ display: 'flex', height: TOTAL_H }}>
+
+            {/* Time label column */}
+            <div style={{ width: TIME_COL, flexShrink: 0, position: 'relative' }}>
+              {HOURS.map(h => (
+                <div
+                  key={h}
+                  style={{
+                    position: 'absolute',
+                    top: (h - GRID_START) * HOUR_H + 2,
+                    right: 6,
+                    fontSize: 11, fontWeight: 600, color: BB.inkMute, lineHeight: 1,
+                  }}
+                >
+                  {fmtHourLabel(h)}
+                </div>
+              ))}
+            </div>
+
+            {/* Day columns */}
+            {days.map((d, colIdx) => {
+              const layout  = columnLayout(sessionsByDay[colIdx] ?? [])
+              const isToday = isSameDay(d, today)
+
+              return (
+                <div
+                  key={colIdx}
+                  style={{
+                    flex: 1, minWidth: 0, position: 'relative',
+                    borderLeft: '1px solid rgba(0,0,0,.05)',
+                    background: isToday ? `${BB.amber}07` : 'transparent',
+                  }}
+                >
+                  {/* Hour grid lines */}
+                  {HOURS.map(h => (
+                    <div
+                      key={h}
+                      style={{
+                        position: 'absolute',
+                        top: (h - GRID_START) * HOUR_H,
+                        left: 0, right: 0,
+                        borderTop: '1px solid rgba(0,0,0,.06)',
+                        pointerEvents: 'none',
+                      }}
+                    />
+                  ))}
+
+                  {/* Session blocks */}
+                  {layout.map(({ s, col, totalCols }) => {
+                    const hktHour  = s.hktHour ?? GRID_START
+                    const hktMin   = s.hktMin  ?? 0
+                    const topPx    = (hktHour - GRID_START) * HOUR_H + (hktMin / 60) * HOUR_H
+                    const heightPx = Math.max((s.durationMin / 60) * HOUR_H - 3, 16)
+                    const pctW     = 100 / totalCols
+                    const pctL     = col * pctW
+
+                    return (
+                      <div
+                        key={s.id}
+                        onClick={() => onSelect(s)}
+                        title={`${s.studentName} · ${s.programme} · ${s.displayTime}`}
+                        style={{
+                          position: 'absolute',
+                          top: topPx,
+                          left: `calc(${pctL}% + 1px)`,
+                          width: `calc(${pctW}% - 3px)`,
+                          height: heightPx,
+                          background: s.color,
+                          opacity: s.status === 'COMPLETED' ? 0.55 : 0.9,
+                          borderRadius: 5, padding: '3px 4px', overflow: 'hidden',
+                          cursor: 'pointer',
+                          boxShadow: '0 1px 5px rgba(0,0,0,.18)',
+                          zIndex: 2,
+                        }}
+                      >
+                        <div style={{
+                          fontSize: 11, fontWeight: 800, color: '#fff',
+                          lineHeight: 1.3, overflow: 'hidden',
+                          whiteSpace: 'nowrap', textOverflow: 'ellipsis',
+                        }}>
+                          {s.studentName?.split(' ')[0] ?? s.programme}
+                        </div>
+                        {heightPx > 32 && (
+                          <div style={{
+                            fontSize: 10, color: 'rgba(255,255,255,.88)',
+                            lineHeight: 1.2, overflow: 'hidden',
+                            whiteSpace: 'nowrap', textOverflow: 'ellipsis',
+                          }}>
+                            {s.programme}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )
+            })}
+          </div>
+
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 export default function ParentSchedule() {
+  const [viewMode, setViewMode]       = useState<ViewMode>('month')
   const [currentMonth, setCurrentMonth] = useState(new Date())
+  const [cursor, setCursor]           = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
-  const [filterProg, setFilterProg] = useState<string | null>(null)
+  const [filterProg, setFilterProg]   = useState<string | null>(null)
   const [bookingSession, setBookingSession] = useState<CalendarSession | null>(null)
   useEffect(() => { document.title = 'Schedule — Our Learning Portal' }, [])
+
+  // Keep currentMonth in sync with week cursor when in week view
+  useEffect(() => {
+    if (viewMode === 'week') {
+      const monday = getMonday(cursor)
+      const mm = format(monday, 'yyyy-MM')
+      const cm = format(currentMonth, 'yyyy-MM')
+      if (mm !== cm) {
+        setCurrentMonth(new Date(monday.getFullYear(), monday.getMonth(), 1))
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cursor, viewMode])
 
   const monthStr = format(currentMonth, 'yyyy-MM')
   const todayStr = format(new Date(), 'yyyy-MM-dd')
@@ -243,6 +490,8 @@ export default function ParentSchedule() {
     () => filterProg ? sessions.filter(s => s.programme === filterProg) : sessions,
     [sessions, filterProg]
   )
+
+  // ── Month view data ───────────────────────────────────────────────────────
 
   const cells = useMemo<CalendarCell[]>(() => {
     const firstDay = startOfMonth(currentMonth)
@@ -272,9 +521,15 @@ export default function ParentSchedule() {
     ? filtered.filter(s => s.date === selectedDate)
     : []
 
+  // ── Navigation ────────────────────────────────────────────────────────────
+
   function handleMonthChange(dir: 1 | -1) {
     setCurrentMonth(m => dir === 1 ? addMonths(m, 1) : subMonths(m, 1))
     setSelectedDate(null)
+  }
+
+  function handleWeekChange(dir: 1 | -1) {
+    setCursor(prev => addDays(prev, dir * 7))
   }
 
   function handleDayClick(cell: CalendarCell) {
@@ -287,111 +542,61 @@ export default function ParentSchedule() {
     toast.success(`Booked! ${slot.dateLabel} · ${slot.timeLabel} ✓`)
   }
 
+  // ── Week nav label ────────────────────────────────────────────────────────
+
+  const weekNavLabel = useMemo(() => {
+    const ws = getMonday(cursor)
+    const we = addDays(ws, 6)
+    const weekNum = getISOWeek(ws)
+    if (ws.getMonth() === we.getMonth()) {
+      return `W${weekNum} · ${ws.getDate()}–${we.getDate()} ${MONTH_NAMES[ws.getMonth()]} ${ws.getFullYear()}`
+    }
+    return `W${weekNum} · ${ws.getDate()} ${MONTH_NAMES[ws.getMonth()]} – ${we.getDate()} ${MONTH_NAMES[we.getMonth()]}`
+  }, [cursor])
+
+  // ── Session detail handler (week view) ───────────────────────────────────
+
+  function handleWeekSessionClick(s: CalendarSession) {
+    setBookingSession(s)
+  }
+
   return (
     <div className="min-h-screen" style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}>
       <ClassroomBG seed={11} />
       <div className="relative flex flex-col min-h-screen">
 
-        {/* ── Header — no Book button ── */}
+        {/* ── Header ── */}
         <div className="flex items-center justify-between px-4 pt-4 pb-2 relative z-10">
           <div style={{ fontSize: 20, fontWeight: 800, color: BB.ink, letterSpacing: -0.3 }}>Schedule</div>
+
+          {/* View mode toggle */}
+          <div style={{
+            display: 'inline-flex', background: 'rgba(255,255,255,.62)',
+            borderRadius: 10, padding: 3, backdropFilter: 'blur(10px)', gap: 1,
+          }}>
+            {(['week', 'month'] as ViewMode[]).map(v => (
+              <button
+                key={v}
+                onClick={() => setViewMode(v)}
+                style={{
+                  height: 30, padding: '0 12px', borderRadius: 8, border: 'none',
+                  background: viewMode === v ? BB.amber : 'transparent',
+                  color: viewMode === v ? '#fff' : BB.inkSoft,
+                  fontWeight: 700, fontSize: 12, cursor: 'pointer',
+                  transition: 'all .15s', textTransform: 'capitalize',
+                }}
+              >
+                {v}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 pb-28 relative z-10">
 
-          {/* ── Calendar card ── */}
-          <Glass padding={16} style={{ marginTop: 6 }}>
-
-            {/* Month navigation */}
-            <div className="flex items-center justify-between mb-5">
-              <button
-                onClick={() => handleMonthChange(-1)}
-                style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(0,0,0,.06)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-              >
-                <Icon name="chev-l" size={17} color={BB.ink} />
-              </button>
-              <div style={{ fontSize: 17, fontWeight: 800, color: BB.ink, letterSpacing: -0.2 }}>
-                {format(currentMonth, 'MMMM yyyy')}
-              </div>
-              <button
-                onClick={() => handleMonthChange(1)}
-                style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(0,0,0,.06)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-              >
-                <Icon name="chev-r" size={17} color={BB.ink} />
-              </button>
-            </div>
-
-            {/* Day-of-week headers */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: 2 }}>
-              {DAY_HEADERS.map(d => (
-                <div key={d} style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: BB.inkMute, paddingBottom: 8 }}>
-                  {d}
-                </div>
-              ))}
-            </div>
-
-            {/* Day cells */}
-            {isLoading ? (
-              <div className="flex justify-center py-10">
-                <div className="w-7 h-7 border-2 border-[#F5C842] border-t-transparent rounded-full animate-spin" />
-              </div>
-            ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2 }}>
-                {visibleCells.map((cell, i) => {
-                  const isSelected = cell.dateStr === selectedDate
-                  return (
-                    <div
-                      key={i}
-                      onClick={() => handleDayClick(cell)}
-                      style={{
-                        minHeight: 50, borderRadius: 10, padding: '4px 2px 5px',
-                        cursor: cell.inMonth ? 'pointer' : 'default',
-                        background: isSelected ? `${BB.amber}28` : 'transparent',
-                        border: isSelected ? `1.5px solid ${BB.amber}` : '1.5px solid transparent',
-                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-                        transition: 'background .15s, border .15s',
-                      }}
-                    >
-                      {cell.inMonth && (
-                        <>
-                          <div style={{
-                            width: 28, height: 28, borderRadius: '50%',
-                            background: cell.isToday ? BB.coral : 'transparent',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: 13, fontWeight: cell.isToday ? 800 : 500,
-                            color: cell.isToday ? '#fff' : BB.ink,
-                          }}>
-                            {cell.dayNum}
-                          </div>
-                          <div style={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center', minHeight: 8 }}>
-                            {cell.daySessions.slice(0, 3).map((s, j) => (
-                              <div key={j} style={{ width: 7, height: 7, borderRadius: '50%', background: s.color, flexShrink: 0 }} />
-                            ))}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-
-            {/* Legend */}
-            {programmes.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-4 pt-3" style={{ borderTop: '1px solid rgba(0,0,0,.06)' }}>
-                {programmes.map(p => (
-                  <div key={p.name} className="flex items-center gap-1.5">
-                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: p.color, flexShrink: 0 }} />
-                    <span style={{ fontSize: 11, fontWeight: 600, color: BB.inkSoft }}>{p.name}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Glass>
-
           {/* ── Filter chips ── */}
           {programmes.length > 0 && (
-            <div className="flex gap-2 mt-3 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+            <div className="flex gap-2 mt-1 mb-3 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
               <button
                 onClick={() => setFilterProg(null)}
                 style={{
@@ -424,89 +629,245 @@ export default function ParentSchedule() {
             </div>
           )}
 
-          {/* ── Selected day detail ── */}
-          {selectedDate && (
-            <div style={{ marginTop: 18 }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: BB.inkSoft, letterSpacing: 0.5, marginBottom: 10, textTransform: 'uppercase' }}>
-                {format(new Date(`${selectedDate}T12:00:00`), 'EEEE, d MMMM')}
+          {/* ══════════════════ WEEK VIEW ══════════════════ */}
+          {viewMode === 'week' && (
+            <>
+              {/* Week navigation */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                <button
+                  onClick={() => handleWeekChange(-1)}
+                  style={{
+                    width: 32, height: 32, borderRadius: '50%',
+                    background: 'rgba(255,255,255,.65)',
+                    border: '1px solid rgba(255,255,255,.6)',
+                    backdropFilter: 'blur(8px)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', flexShrink: 0,
+                  }}
+                >
+                  <Icon name="chev-l" size={16} color={BB.ink} />
+                </button>
+
+                <div
+                  onClick={() => { setCursor(new Date()) }}
+                  title="Tap to return to today"
+                  style={{
+                    flex: 1, textAlign: 'center',
+                    fontSize: 13, fontWeight: 700, color: BB.ink,
+                    cursor: 'pointer', padding: '6px 0', borderRadius: 10,
+                    background: 'rgba(255,255,255,.45)', backdropFilter: 'blur(8px)',
+                  }}
+                >
+                  {weekNavLabel}
+                </div>
+
+                <button
+                  onClick={() => handleWeekChange(1)}
+                  style={{
+                    width: 32, height: 32, borderRadius: '50%',
+                    background: 'rgba(255,255,255,.65)',
+                    border: '1px solid rgba(255,255,255,.6)',
+                    backdropFilter: 'blur(8px)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', flexShrink: 0,
+                  }}
+                >
+                  <Icon name="chev-r" size={16} color={BB.ink} />
+                </button>
               </div>
 
-              {selectedSessions.length === 0 ? (
-                <Glass padding={22} style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 30 }}>😴</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: BB.ink, marginTop: 8 }}>No classes this day</div>
-                  <div style={{ fontSize: 12, color: BB.inkSoft, marginTop: 4 }}>
-                    {filterProg ? `No ${filterProg} classes` : 'Nothing scheduled'}
-                  </div>
-                </Glass>
-              ) : (
-                <div className="flex flex-col gap-3">
-                  {selectedSessions.map(s => (
-                    <Glass key={s.id} padding={0} style={{ overflow: 'hidden' }}>
-                      <div style={{ display: 'flex', alignItems: 'stretch' }}>
-                        {/* Colour bar */}
-                        <div style={{ width: 5, background: s.color, flexShrink: 0 }} />
-                        <div style={{ flex: 1, padding: '14px 14px 14px 12px' }}>
-                          {/* Top row: mascot + info + status badges */}
-                          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                            <Mascot kind={s.mascot} size={38} />
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{ fontSize: 14, fontWeight: 800, color: BB.ink }}>{s.programme}</div>
-                              <div style={{ fontSize: 12, color: BB.inkSoft, marginTop: 1 }}>
-                                {s.displayTime} · {s.durationMin} min
-                              </div>
-                              <div style={{ fontSize: 12, color: BB.inkSoft }}>with {s.teacher}</div>
-                              <div style={{ fontSize: 11, color: BB.inkMute }}>{s.studentName}</div>
-                            </div>
-                            {/* Status + Book button column */}
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, flexShrink: 0 }}>
-                              <Pill color={
-                                s.status === 'COMPLETED' ? BB.green
-                                : s.status === 'CANCELLED' ? BB.inkMute
-                                : BB.teal
-                              }>
-                                {s.status === 'COMPLETED' ? '✓ Done'
-                                  : s.status === 'SCHEDULED' ? 'Upcoming'
-                                  : s.status}
-                              </Pill>
-                              {/* Book button — only for upcoming classes */}
-                              {s.status === 'SCHEDULED' && (
-                                <button
-                                  onClick={() => setBookingSession(s)}
-                                  style={{
-                                    padding: '5px 12px', borderRadius: 999,
-                                    border: `1.5px solid ${s.color}`,
-                                    background: `${s.color}12`,
-                                    color: s.color,
-                                    fontSize: 12, fontWeight: 800,
-                                    cursor: 'pointer',
-                                    display: 'flex', alignItems: 'center', gap: 5,
-                                    transition: 'all .15s',
-                                  }}
-                                >
-                                  <Icon name="plus" size={11} color={s.color} /> Book
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </Glass>
-                  ))}
+              {isLoading ? (
+                <div className="flex justify-center py-10">
+                  <div className="w-7 h-7 border-2 border-[#F5C842] border-t-transparent rounded-full animate-spin" />
                 </div>
+              ) : (
+                <WeekView
+                  sessions={filtered}
+                  cursor={cursor}
+                  onSelect={handleWeekSessionClick}
+                />
               )}
-            </div>
+            </>
           )}
 
-          {/* ── Empty month state ── */}
-          {!isLoading && sessions.length === 0 && (
-            <Glass padding={28} style={{ textAlign: 'center', marginTop: 16 }}>
-              <div style={{ fontSize: 36 }}>📅</div>
-              <div style={{ fontSize: 15, fontWeight: 800, color: BB.ink, marginTop: 10 }}>No classes in {format(currentMonth, 'MMMM')}</div>
-              <div style={{ fontSize: 13, color: BB.inkSoft, marginTop: 6 }}>
-                Select a day to see your classes and book a session
-              </div>
-            </Glass>
+          {/* ══════════════════ MONTH VIEW ══════════════════ */}
+          {viewMode === 'month' && (
+            <>
+              {/* ── Calendar card ── */}
+              <Glass padding={16} style={{ marginTop: 0 }}>
+
+                {/* Month navigation */}
+                <div className="flex items-center justify-between mb-5">
+                  <button
+                    onClick={() => handleMonthChange(-1)}
+                    style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(0,0,0,.06)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                  >
+                    <Icon name="chev-l" size={17} color={BB.ink} />
+                  </button>
+                  <div style={{ fontSize: 17, fontWeight: 800, color: BB.ink, letterSpacing: -0.2 }}>
+                    {format(currentMonth, 'MMMM yyyy')}
+                  </div>
+                  <button
+                    onClick={() => handleMonthChange(1)}
+                    style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(0,0,0,.06)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                  >
+                    <Icon name="chev-r" size={17} color={BB.ink} />
+                  </button>
+                </div>
+
+                {/* Day-of-week headers */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: 2 }}>
+                  {DAY_HEADERS.map(d => (
+                    <div key={d} style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: BB.inkMute, paddingBottom: 8 }}>
+                      {d}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Day cells */}
+                {isLoading ? (
+                  <div className="flex justify-center py-10">
+                    <div className="w-7 h-7 border-2 border-[#F5C842] border-t-transparent rounded-full animate-spin" />
+                  </div>
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2 }}>
+                    {visibleCells.map((cell, i) => {
+                      const isSelected = cell.dateStr === selectedDate
+                      return (
+                        <div
+                          key={i}
+                          onClick={() => handleDayClick(cell)}
+                          style={{
+                            minHeight: 50, borderRadius: 10, padding: '4px 2px 5px',
+                            cursor: cell.inMonth ? 'pointer' : 'default',
+                            background: isSelected ? `${BB.amber}28` : 'transparent',
+                            border: isSelected ? `1.5px solid ${BB.amber}` : '1.5px solid transparent',
+                            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+                            transition: 'background .15s, border .15s',
+                          }}
+                        >
+                          {cell.inMonth && (
+                            <>
+                              <div style={{
+                                width: 28, height: 28, borderRadius: '50%',
+                                background: cell.isToday ? BB.coral : 'transparent',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontSize: 13, fontWeight: cell.isToday ? 800 : 500,
+                                color: cell.isToday ? '#fff' : BB.ink,
+                              }}>
+                                {cell.dayNum}
+                              </div>
+                              <div style={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center', minHeight: 8 }}>
+                                {cell.daySessions.slice(0, 3).map((s, j) => (
+                                  <div key={j} style={{ width: 7, height: 7, borderRadius: '50%', background: s.color, flexShrink: 0 }} />
+                                ))}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+
+                {/* Legend */}
+                {programmes.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-4 pt-3" style={{ borderTop: '1px solid rgba(0,0,0,.06)' }}>
+                    {programmes.map(p => (
+                      <div key={p.name} className="flex items-center gap-1.5">
+                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: p.color, flexShrink: 0 }} />
+                        <span style={{ fontSize: 11, fontWeight: 600, color: BB.inkSoft }}>{p.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </Glass>
+
+              {/* ── Selected day detail ── */}
+              {selectedDate && (
+                <div style={{ marginTop: 18 }}>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: BB.inkSoft, letterSpacing: 0.5, marginBottom: 10, textTransform: 'uppercase' }}>
+                    {format(new Date(`${selectedDate}T12:00:00`), 'EEEE, d MMMM')}
+                  </div>
+
+                  {selectedSessions.length === 0 ? (
+                    <Glass padding={22} style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: 30 }}>😴</div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: BB.ink, marginTop: 8 }}>No classes this day</div>
+                      <div style={{ fontSize: 12, color: BB.inkSoft, marginTop: 4 }}>
+                        {filterProg ? `No ${filterProg} classes` : 'Nothing scheduled'}
+                      </div>
+                    </Glass>
+                  ) : (
+                    <div className="flex flex-col gap-3">
+                      {selectedSessions.map(s => (
+                        <Glass key={s.id} padding={0} style={{ overflow: 'hidden' }}>
+                          <div style={{ display: 'flex', alignItems: 'stretch' }}>
+                            {/* Colour bar */}
+                            <div style={{ width: 5, background: s.color, flexShrink: 0 }} />
+                            <div style={{ flex: 1, padding: '14px 14px 14px 12px' }}>
+                              {/* Top row: mascot + info + status badges */}
+                              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                                <Mascot kind={s.mascot} size={38} />
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ fontSize: 14, fontWeight: 800, color: BB.ink }}>{s.programme}</div>
+                                  <div style={{ fontSize: 12, color: BB.inkSoft, marginTop: 1 }}>
+                                    {s.displayTime} · {s.durationMin} min
+                                  </div>
+                                  <div style={{ fontSize: 12, color: BB.inkSoft }}>with {s.teacher}</div>
+                                  <div style={{ fontSize: 11, color: BB.inkMute }}>{s.studentName}</div>
+                                </div>
+                                {/* Status + Book button column */}
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, flexShrink: 0 }}>
+                                  <Pill color={
+                                    s.status === 'COMPLETED' ? BB.green
+                                    : s.status === 'CANCELLED' ? BB.inkMute
+                                    : BB.teal
+                                  }>
+                                    {s.status === 'COMPLETED' ? '✓ Done'
+                                      : s.status === 'SCHEDULED' ? 'Upcoming'
+                                      : s.status}
+                                  </Pill>
+                                  {/* Book button — only for upcoming classes */}
+                                  {s.status === 'SCHEDULED' && (
+                                    <button
+                                      onClick={() => setBookingSession(s)}
+                                      style={{
+                                        padding: '5px 12px', borderRadius: 999,
+                                        border: `1.5px solid ${s.color}`,
+                                        background: `${s.color}12`,
+                                        color: s.color,
+                                        fontSize: 12, fontWeight: 800,
+                                        cursor: 'pointer',
+                                        display: 'flex', alignItems: 'center', gap: 5,
+                                        transition: 'all .15s',
+                                      }}
+                                    >
+                                      <Icon name="plus" size={11} color={s.color} /> Book
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </Glass>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ── Empty month state ── */}
+              {!isLoading && sessions.length === 0 && (
+                <Glass padding={28} style={{ textAlign: 'center', marginTop: 16 }}>
+                  <div style={{ fontSize: 36 }}>📅</div>
+                  <div style={{ fontSize: 15, fontWeight: 800, color: BB.ink, marginTop: 10 }}>No classes in {format(currentMonth, 'MMMM')}</div>
+                  <div style={{ fontSize: 13, color: BB.inkSoft, marginTop: 6 }}>
+                    Select a day to see your classes and book a session
+                  </div>
+                </Glass>
+              )}
+            </>
           )}
 
         </div>

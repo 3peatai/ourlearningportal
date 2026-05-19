@@ -139,45 +139,39 @@ export default function ParentDashboard() {
       <ClassroomBG seed={5} />
       <div className="relative flex flex-col min-h-screen">
 
-        {/* ── Mode switcher ── */}
-        <div style={{ display: 'flex', gap: 6, padding: '8px 16px 0', position: 'relative', zIndex: 10 }}>
-          {ROLE_MODES.map(m => {
-            const active = user?.role === m.role
-            return (
-              <button
-                key={m.role}
-                disabled={active}
-                onClick={async () => { try { await login(m.email, m.pass); navigate(m.path) } catch {} }}
-                style={{
-                  fontSize: 11, fontWeight: 700, padding: '4px 11px', borderRadius: 99,
-                  border: `1.5px solid ${active ? BB.teal : 'rgba(28,42,44,0.18)'}`,
-                  background: active ? BB.teal : 'rgba(255,255,255,0.72)',
-                  color: active ? '#fff' : BB.inkSoft,
-                  cursor: active ? 'default' : 'pointer',
-                  backdropFilter: 'blur(8px)',
-                  transition: 'all .15s',
-                }}
-              >
-                {active ? `✓ ${m.label}` : m.label}
-              </button>
-            )
-          })}
-          <span style={{ fontSize: 10, color: BB.inkMute, alignSelf: 'center', marginLeft: 4 }}>demo mode</span>
-        </div>
-
         {/* ── Top bar ── */}
         <div className="flex items-center justify-between px-4 pt-4 pb-2 relative z-10">
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <svg width="20" height="20" viewBox="0 0 28 28" fill="none">
-              <circle cx="14" cy="14" r="12" stroke={BB.teal} strokeWidth="1.6"/>
-              <circle cx="14" cy="14" r="6" fill={BB.teal}/>
-              <circle cx="22" cy="14" r="1.6" fill={BB.teal}/>
+            <svg width="20" height="20" viewBox="0 0 64 64" fill="none">
+              <path d="M8 56 V32 a24 24 0 0 1 48 0 V56" stroke={BB.teal} strokeWidth="3" strokeLinecap="round" fill="none"/>
+              <path d="M18 56 V34 a14 14 0 0 1 28 0 V56" stroke={BB.teal} strokeWidth="2.4" strokeLinecap="round" fill="none" opacity="0.55"/>
+              <line x1="6" y1="56" x2="58" y2="56" stroke={BB.teal} strokeWidth="3" strokeLinecap="round"/>
+              <circle cx="32" cy="34" r="3.2" fill="#b85e3a"/>
             </svg>
             <span style={{ fontWeight: 600, fontSize: 15, letterSpacing: -0.3, color: BB.ink }}>Our Learning</span>
             <span style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: 17, color: BB.teal }}>portal</span>
           </div>
-          <div className="flex items-center gap-2.5">
-            <div className="flex items-center justify-center relative" style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,.65)', border: '1px solid rgba(255,255,255,.6)', backdropFilter: 'blur(10px)' }}>
+          <div className="flex items-center gap-1.5">
+            {/* Mode switcher */}
+            {ROLE_MODES.map(m => {
+              const active = user?.role === m.role
+              return (
+                <button key={m.role} disabled={active}
+                  onClick={async () => { try { await login(m.email, m.pass); navigate(m.path) } catch {} }}
+                  style={{
+                    fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 99,
+                    border: `1.5px solid ${active ? BB.teal : 'rgba(28,42,44,0.18)'}`,
+                    background: active ? BB.teal : 'rgba(255,255,255,0.75)',
+                    color: active ? '#fff' : BB.inkSoft,
+                    cursor: active ? 'default' : 'pointer',
+                    backdropFilter: 'blur(8px)',
+                  }}
+                >
+                  {active ? `✓ ${m.label}` : m.label}
+                </button>
+              )
+            })}
+            <div className="flex items-center justify-center relative" style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,.65)', border: '1px solid rgba(255,255,255,.6)', backdropFilter: 'blur(10px)', marginLeft: 4 }}>
               <Icon name="bell" size={18} color={BB.ink} />
               <div className="absolute" style={{ top: 8, right: 8, width: 8, height: 8, borderRadius: '50%', background: BB.coral, border: '2px solid #fff' }} />
             </div>

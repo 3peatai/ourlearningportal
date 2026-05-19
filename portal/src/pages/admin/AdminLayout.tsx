@@ -7,6 +7,12 @@ import {
 import { useAuth } from '../../context/AuthContext'
 import { R } from '../../lib/routes'
 
+const ROLE_MODES = [
+  { label: 'Parent',  role: 'PARENT',  email: 'sarah.lam@hkmail.com',         pass: 'parent123',  path: R.PARENT_DASHBOARD  },
+  { label: 'Teacher', role: 'TEACHER', email: 'beverly@ourlearningportal.com', pass: 'teacher123', path: R.TEACHER_DASHBOARD },
+  { label: 'Admin',   role: 'ADMIN',   email: 'admin@ourlearningportal.com',   pass: 'admin123',   path: R.ADMIN_DASHBOARD   },
+]
+
 const NAV = [
   { path: R.ADMIN_DASHBOARD,  icon: LayoutDashboard, label: 'Dashboard'  },
   { path: R.ADMIN_STUDENTS,   icon: Users,            label: 'Students'   },
@@ -40,10 +46,11 @@ function InitialsAvatar({ name, size = 36 }: { name: string; size?: number }) {
 function OLPWordmark() {
   return (
     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-      <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
-        <circle cx="14" cy="14" r="12" stroke={TEAL} strokeWidth="1.6"/>
-        <circle cx="14" cy="14" r="6" fill={TEAL}/>
-        <circle cx="22" cy="14" r="1.6" fill={TEAL}/>
+      <svg width="22" height="22" viewBox="0 0 64 64" fill="none">
+        <path d="M8 56 V32 a24 24 0 0 1 48 0 V56" stroke={TEAL} strokeWidth="3" strokeLinecap="round" fill="none"/>
+        <path d="M18 56 V34 a14 14 0 0 1 28 0 V56" stroke={TEAL} strokeWidth="2.4" strokeLinecap="round" fill="none" opacity="0.55"/>
+        <line x1="6" y1="56" x2="58" y2="56" stroke={TEAL} strokeWidth="3" strokeLinecap="round"/>
+        <circle cx="32" cy="34" r="3.2" fill="#b85e3a"/>
       </svg>
       <span style={{ fontWeight: 600, fontSize: 14, letterSpacing: -0.3, color: INK }}>Our Learning</span>
       <span style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: 16, color: TEAL, letterSpacing: -0.2 }}>portal</span>
@@ -52,13 +59,17 @@ function OLPWordmark() {
 }
 
 export default function AdminLayout() {
-  const { user, logout } = useAuth()
+  const { user, logout, login } = useAuth()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
 
   function handleLogout() {
     logout()
     navigate(R.LOGIN)
+  }
+
+  async function switchRole(email: string, pass: string, path: string) {
+    try { await login(email, pass); navigate(path) } catch {}
   }
 
   const sidebar = (
@@ -114,6 +125,29 @@ export default function AdminLayout() {
             <div style={{ fontSize: 11, color: '#9CA3AF' }}>Administrator</div>
           </div>
         </div>
+        {/* Demo mode switcher */}
+        <div style={{ display: 'flex', gap: 5, marginBottom: 8, flexWrap: 'wrap' }}>
+          {ROLE_MODES.map(m => {
+            const active = user?.role === m.role
+            return (
+              <button
+                key={m.role}
+                disabled={active}
+                onClick={() => switchRole(m.email, m.pass, m.path)}
+                style={{
+                  flex: 1, fontSize: 10, fontWeight: 700, padding: '4px 6px', borderRadius: 99,
+                  border: `1.5px solid ${active ? TEAL : 'rgba(28,42,44,0.18)'}`,
+                  background: active ? TEAL : '#f9f9f9',
+                  color: active ? '#fff' : '#4a5b5c',
+                  cursor: active ? 'default' : 'pointer',
+                  transition: 'all .15s', whiteSpace: 'nowrap',
+                }}
+              >
+                {active ? `✓ ${m.label}` : m.label}
+              </button>
+            )
+          })}
+        </div>
         <button
           onClick={handleLogout}
           style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '7px 10px', borderRadius: 8, border: 'none', background: '#FEF2F2', color: '#DC2626', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
@@ -147,16 +181,30 @@ export default function AdminLayout() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
         {/* Mobile top bar */}
-        <div className="flex md:hidden" style={{ alignItems: 'center', gap: 12, padding: '12px 16px', background: '#fff', borderBottom: '1px solid rgba(28,42,44,0.08)' }}>
-          <button onClick={() => setOpen(true)} style={{ padding: 6, borderRadius: 8, border: '1px solid rgba(28,42,44,0.1)', background: 'none', cursor: 'pointer' }}>
+        <div className="flex md:hidden" style={{ alignItems: 'center', gap: 10, padding: '10px 16px', background: '#fff', borderBottom: '1px solid rgba(28,42,44,0.08)' }}>
+          <button onClick={() => setOpen(true)} style={{ padding: 6, borderRadius: 8, border: '1px solid rgba(28,42,44,0.1)', background: 'none', cursor: 'pointer', flexShrink: 0 }}>
             <Menu size={20} color="#4B5563" />
           </button>
           <OLPWordmark />
-          {open && (
-            <button onClick={() => setOpen(false)} style={{ marginLeft: 'auto', padding: 6, border: 'none', background: 'none', cursor: 'pointer' }}>
-              <X size={20} color="#4B5563" />
-            </button>
-          )}
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 4, alignItems: 'center' }}>
+            {ROLE_MODES.map(m => {
+              const active = user?.role === m.role
+              return (
+                <button key={m.role} disabled={active}
+                  onClick={() => switchRole(m.email, m.pass, m.path)}
+                  style={{
+                    fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 99,
+                    border: `1.5px solid ${active ? TEAL : 'rgba(28,42,44,0.18)'}`,
+                    background: active ? TEAL : '#f9f9f9',
+                    color: active ? '#fff' : '#4a5b5c',
+                    cursor: active ? 'default' : 'pointer',
+                  }}
+                >
+                  {active ? `✓ ${m.label}` : m.label}
+                </button>
+              )
+            })}
+          </div>
         </div>
 
         {/* Page content */}
