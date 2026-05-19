@@ -35,6 +35,7 @@ function PayslipBadge({ status }: { status: string }) {
 // ─── Weekly Availability Grid (read-only) ─────────────────────────────────────
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const DAY_KEYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 const HOURS = Array.from({ length: 12 }, (_, i) => i + 10) // 10am – 9pm
 
 function AvailabilityGrid({ pattern }: { pattern: Record<string, unknown> | null | undefined }) {
@@ -42,8 +43,9 @@ function AvailabilityGrid({ pattern }: { pattern: Record<string, unknown> | null
   const pat = pattern  // narrowed copy for nested function
 
   function isAvailable(dayIdx: number, hour: number): boolean {
-    const dayData = pat[String(dayIdx)] as { slots?: number[] } | undefined
-    return dayData?.slots?.includes(hour) ?? false
+    const key = DAY_KEYS[dayIdx]
+    const slots = (pat[key] as string[] | undefined) ?? []
+    return slots.includes(`${hour}:00`)
   }
 
   return (
@@ -65,7 +67,8 @@ function AvailabilityGrid({ pattern }: { pattern: Record<string, unknown> | null
             {DAYS.map((_, di) => (
               <div key={`${h}-${di}`} style={{
                 height: 16, borderRadius: 3,
-                background: isAvailable(di, h) ? '#4AADBC' : '#F3F4F6',
+                background: isAvailable(di, h) ? '#0c7872' : '#F3F4F6',
+                opacity: isAvailable(di, h) ? 0.85 : 1,
               }} />
             ))}
           </>

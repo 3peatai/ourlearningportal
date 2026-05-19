@@ -644,34 +644,35 @@ export function getMockExpenses(month?: string) {
 
 // ─── Admin Teacher Detail ─────────────────────────────────────────────────────
 
+function firstDayOfMonthStr(d: Date) {
+  const r = new Date(d); r.setDate(1); return toDateStr(r)
+}
+function lastDayOfMonthStr(d: Date) {
+  const r = new Date(d); r.setMonth(r.getMonth() + 1, 0); return toDateStr(r)
+}
+
+function mapSessions(allSessions: CalendarSessionData[], teacherId: string) {
+  return allSessions
+    .filter(s => s.teacher.id === teacherId && s.status === 'COMPLETED')
+    .slice(-10)
+    .map(s => ({
+      id: s.id,
+      displayDateTime: `${s.displayDate} · ${s.displayTime}`,
+      durationMin: s.durationMin,
+      status: s.status,
+      student: s.student,
+      programme: { id: s.programme.id, name: s.programme.name, color: s.programme.color },
+    }))
+}
+
 export function getMockAdminTeacherDetail(id: string) {
   const teacher = getTeacherById(id)
   const allSessions = getMockCalendarSessions()
+  const today = new Date()
+  const twoMonthsAgo = addDays(today, -60)
+  const oneMonthAgo  = addDays(today, -30)
 
   if (id === 't1') {
-    const beverlyCompleted = allSessions
-      .filter(s => s.teacher.id === 't1' && s.status === 'COMPLETED')
-      .slice(-8)
-      .map(s => ({
-        id: s.id,
-        displayDateTime: `${s.displayDate} · ${s.displayTime}`,
-        durationMin: s.durationMin,
-        status: s.status,
-        student: s.student,
-        programme: { id: s.programme.id, name: s.programme.name, color: s.programme.color },
-      }))
-
-    const today = new Date()
-    const twoMonthsAgo = addDays(today, -60)
-    const oneMonthAgo  = addDays(today, -30)
-
-    function firstDayOfMonthStr(d: Date) {
-      const r = new Date(d); r.setDate(1); return toDateStr(r)
-    }
-    function lastDayOfMonthStr(d: Date) {
-      const r = new Date(d); r.setMonth(r.getMonth() + 1, 0); return toDateStr(r)
-    }
-
     return {
       ...teacher,
       availability: {
@@ -685,37 +686,128 @@ export function getMockAdminTeacherDetail(id: string) {
         },
         exceptions: [],
       },
-      sessions: beverlyCompleted,
+      sessions: mapSessions(allSessions, 't1'),
       payslips: [
-        {
-          id: 'ps1',
-          periodStart: firstDayOfMonthStr(twoMonthsAgo),
-          periodEnd: lastDayOfMonthStr(twoMonthsAgo),
-          totalHours: 22,
-          grossAmount: 7700,
-          status: 'CONFIRMED',
-          confirmedAt: new Date(today.getTime() - 21 * 86400000).toISOString(),
-        },
-        {
-          id: 'ps2',
-          periodStart: firstDayOfMonthStr(oneMonthAgo),
-          periodEnd: lastDayOfMonthStr(oneMonthAgo),
-          totalHours: 24,
-          grossAmount: 8400,
-          status: 'DRAFT',
-          confirmedAt: null,
-        },
+        { id: 'ps-t1-1', periodStart: firstDayOfMonthStr(twoMonthsAgo), periodEnd: lastDayOfMonthStr(twoMonthsAgo), totalHours: 22, grossAmount: 7700, status: 'CONFIRMED', confirmedAt: new Date(today.getTime() - 45 * 86400000).toISOString() },
+        { id: 'ps-t1-2', periodStart: firstDayOfMonthStr(oneMonthAgo),  periodEnd: lastDayOfMonthStr(oneMonthAgo),  totalHours: 24, grossAmount: 8400, status: 'CONFIRMED', confirmedAt: new Date(today.getTime() - 14 * 86400000).toISOString() },
+        { id: 'ps-t1-3', periodStart: firstDayOfMonthStr(today),        periodEnd: lastDayOfMonthStr(today),        totalHours: 18, grossAmount: 6300, status: 'DRAFT',     confirmedAt: null },
       ],
     }
   }
 
-  // Simpler version for other teachers
-  return {
-    ...teacher,
-    availability: null,
-    sessions: [],
-    payslips: [],
+  if (id === 't2') {
+    return {
+      ...teacher,
+      availability: {
+        weeklyPattern: {
+          MON: ['14:00', '15:00', '16:00', '17:00', '18:00'],
+          TUE: ['10:00', '11:00', '14:00', '15:00', '16:00', '17:00'],
+          WED: ['14:00', '15:00', '16:00', '17:00'],
+          THU: ['10:00', '11:00', '14:00', '15:00', '16:00', '17:00'],
+          FRI: ['14:00', '15:00', '16:00', '17:00', '18:00'],
+          SAT: ['10:00', '11:00', '12:00'],
+        },
+        exceptions: [
+          { startDate: toDateStr(addDays(today, 10)), endDate: toDateStr(addDays(today, 12)), reason: 'Family trip' },
+        ],
+      },
+      sessions: mapSessions(allSessions, 't2'),
+      payslips: [
+        { id: 'ps-t2-1', periodStart: firstDayOfMonthStr(twoMonthsAgo), periodEnd: lastDayOfMonthStr(twoMonthsAgo), totalHours: 16, grossAmount: 4800, status: 'CONFIRMED', confirmedAt: new Date(today.getTime() - 43 * 86400000).toISOString() },
+        { id: 'ps-t2-2', periodStart: firstDayOfMonthStr(oneMonthAgo),  periodEnd: lastDayOfMonthStr(oneMonthAgo),  totalHours: 14, grossAmount: 4200, status: 'CONFIRMED', confirmedAt: new Date(today.getTime() - 12 * 86400000).toISOString() },
+        { id: 'ps-t2-3', periodStart: firstDayOfMonthStr(today),        periodEnd: lastDayOfMonthStr(today),        totalHours: 14, grossAmount: 4200, status: 'DRAFT',     confirmedAt: null },
+      ],
+    }
   }
+
+  if (id === 't3') {
+    return {
+      ...teacher,
+      availability: {
+        weeklyPattern: {
+          TUE: ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00'],
+          THU: ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00'],
+          SAT: ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00'],
+        },
+        exceptions: [],
+      },
+      sessions: mapSessions(allSessions, 't3'),
+      payslips: [
+        { id: 'ps-t3-1', periodStart: firstDayOfMonthStr(twoMonthsAgo), periodEnd: lastDayOfMonthStr(twoMonthsAgo), totalHours: 18, grossAmount: 5850, status: 'CONFIRMED', confirmedAt: new Date(today.getTime() - 41 * 86400000).toISOString() },
+        { id: 'ps-t3-2', periodStart: firstDayOfMonthStr(oneMonthAgo),  periodEnd: lastDayOfMonthStr(oneMonthAgo),  totalHours: 15, grossAmount: 4875, status: 'CONFIRMED', confirmedAt: new Date(today.getTime() - 10 * 86400000).toISOString() },
+        { id: 'ps-t3-3', periodStart: firstDayOfMonthStr(today),        periodEnd: lastDayOfMonthStr(today),        totalHours: 15, grossAmount: 4875, status: 'DRAFT',     confirmedAt: null },
+      ],
+    }
+  }
+
+  if (id === 't4') {
+    return {
+      ...teacher,
+      availability: {
+        weeklyPattern: {
+          MON: ['15:00', '16:00', '17:00', '18:00'],
+          TUE: ['15:00', '16:00', '17:00', '18:00', '19:00'],
+          WED: ['15:00', '16:00', '17:00', '18:00'],
+          THU: ['15:00', '16:00', '17:00', '18:00', '19:00'],
+          FRI: ['14:00', '15:00', '16:00', '17:00', '18:00'],
+        },
+        exceptions: [
+          { startDate: toDateStr(addDays(today, 5)), endDate: toDateStr(addDays(today, 5)), reason: 'Workshop' },
+        ],
+      },
+      sessions: mapSessions(allSessions, 't4'),
+      payslips: [
+        { id: 'ps-t4-1', periodStart: firstDayOfMonthStr(twoMonthsAgo), periodEnd: lastDayOfMonthStr(twoMonthsAgo), totalHours: 10, grossAmount: 2800, status: 'CONFIRMED', confirmedAt: new Date(today.getTime() - 40 * 86400000).toISOString() },
+        { id: 'ps-t4-2', periodStart: firstDayOfMonthStr(oneMonthAgo),  periodEnd: lastDayOfMonthStr(oneMonthAgo),  totalHours: 8,  grossAmount: 2240, status: 'CONFIRMED', confirmedAt: new Date(today.getTime() - 9 * 86400000).toISOString() },
+        { id: 'ps-t4-3', periodStart: firstDayOfMonthStr(today),        periodEnd: lastDayOfMonthStr(today),        totalHours: 8,  grossAmount: 2240, status: 'DRAFT',     confirmedAt: null },
+      ],
+    }
+  }
+
+  if (id === 't5') {
+    return {
+      ...teacher,
+      availability: {
+        weeklyPattern: {
+          MON: ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00'],
+          WED: ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00'],
+          FRI: ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00'],
+          SAT: ['10:00', '11:00', '12:00', '13:00'],
+        },
+        exceptions: [],
+      },
+      sessions: mapSessions(allSessions, 't5'),
+      payslips: [
+        { id: 'ps-t5-1', periodStart: firstDayOfMonthStr(twoMonthsAgo), periodEnd: lastDayOfMonthStr(twoMonthsAgo), totalHours: 20, grossAmount: 6200, status: 'CONFIRMED', confirmedAt: new Date(today.getTime() - 42 * 86400000).toISOString() },
+        { id: 'ps-t5-2', periodStart: firstDayOfMonthStr(oneMonthAgo),  periodEnd: lastDayOfMonthStr(oneMonthAgo),  totalHours: 18, grossAmount: 5580, status: 'CONFIRMED', confirmedAt: new Date(today.getTime() - 11 * 86400000).toISOString() },
+        { id: 'ps-t5-3', periodStart: firstDayOfMonthStr(today),        periodEnd: lastDayOfMonthStr(today),        totalHours: 18, grossAmount: 5580, status: 'DRAFT',     confirmedAt: null },
+      ],
+    }
+  }
+
+  if (id === 't6') {
+    return {
+      ...teacher,
+      availability: {
+        weeklyPattern: {
+          MON: ['14:00', '15:00', '16:00', '17:00', '18:00'],
+          TUE: ['14:00', '15:00', '16:00', '17:00', '18:00'],
+          WED: ['14:00', '15:00', '16:00', '17:00', '18:00'],
+          FRI: ['14:00', '15:00', '16:00', '17:00'],
+          SAT: ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00'],
+        },
+        exceptions: [],
+      },
+      sessions: mapSessions(allSessions, 't6'),
+      payslips: [
+        { id: 'ps-t6-1', periodStart: firstDayOfMonthStr(twoMonthsAgo), periodEnd: lastDayOfMonthStr(twoMonthsAgo), totalHours: 8,  grossAmount: 2320, status: 'CONFIRMED', confirmedAt: new Date(today.getTime() - 44 * 86400000).toISOString() },
+        { id: 'ps-t6-2', periodStart: firstDayOfMonthStr(oneMonthAgo),  periodEnd: lastDayOfMonthStr(oneMonthAgo),  totalHours: 6,  grossAmount: 1740, status: 'CONFIRMED', confirmedAt: new Date(today.getTime() - 13 * 86400000).toISOString() },
+        { id: 'ps-t6-3', periodStart: firstDayOfMonthStr(today),        periodEnd: lastDayOfMonthStr(today),        totalHours: 6,  grossAmount: 1740, status: 'DRAFT',     confirmedAt: null },
+      ],
+    }
+  }
+
+  return { ...teacher, availability: null, sessions: [], payslips: [] }
 }
 
 // ─── Parent Mock Data ─────────────────────────────────────────────────────────
