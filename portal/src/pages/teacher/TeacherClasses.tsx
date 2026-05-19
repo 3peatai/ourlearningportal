@@ -26,7 +26,7 @@ const DAY_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 const GRID_START = 9   // 9 am
 const GRID_END   = 21  // 9 pm
-const HOUR_H     = 54  // px per hour in week grid
+const HOUR_H     = 72  // px per hour in week grid
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -175,7 +175,7 @@ function DayView({ sessions, date, onSelect }: {
 
 // ─── Week View ────────────────────────────────────────────────────────────────
 
-const TIME_COL  = 44   // width of time label column in px
+const TIME_COL  = 52   // width of time label column in px
 const HOURS     = Array.from({ length: GRID_END - GRID_START }, (_, i) => i + GRID_START)
 const TOTAL_H   = (GRID_END - GRID_START) * HOUR_H
 
@@ -223,7 +223,7 @@ function WeekView({ sessions, date, onSelect }: {
             {/* Time label column */}
             <div style={{ width: TIME_COL, flexShrink: 0, position: 'relative' }}>
               {HOURS.map(h => (
-                <div key={h} style={{ position: 'absolute', top: (h - GRID_START) * HOUR_H + 2, right: 6, fontSize: 9, fontWeight: 600, color: BB.inkMute, lineHeight: 1 }}>
+                <div key={h} style={{ position: 'absolute', top: (h - GRID_START) * HOUR_H + 2, right: 6, fontSize: 11, fontWeight: 600, color: BB.inkMute, lineHeight: 1 }}>
                   {fmtHour(h)}
                 </div>
               ))}
@@ -265,11 +265,11 @@ function WeekView({ sessions, date, onSelect }: {
                           cursor: 'pointer', boxShadow: '0 1px 5px rgba(0,0,0,.18)', zIndex: 2,
                         }}
                       >
-                        <div style={{ fontSize: 9, fontWeight: 800, color: '#fff', lineHeight: 1.3, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                        <div style={{ fontSize: 11, fontWeight: 800, color: '#fff', lineHeight: 1.3, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                           {s.student.name.split(' ')[0]}
                         </div>
                         {heightPx > 32 && (
-                          <div style={{ fontSize: 8, color: 'rgba(255,255,255,.88)', lineHeight: 1.2, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                          <div style={{ fontSize: 10, color: 'rgba(255,255,255,.88)', lineHeight: 1.2, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                             {s.programme.name}
                           </div>
                         )}
