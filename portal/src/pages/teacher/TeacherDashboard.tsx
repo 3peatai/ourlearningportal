@@ -87,41 +87,47 @@ export default function TeacherDashboard() {
 
         {/* ── Top bar ── */}
         <div className="flex items-center justify-between px-4 pt-4 pb-2 relative z-10">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <svg width="20" height="20" viewBox="0 0 64 64" fill="none">
+          {/* Wordmark */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+            <svg width="18" height="18" viewBox="0 0 64 64" fill="none">
               <path d="M8 56 V32 a24 24 0 0 1 48 0 V56" stroke={BB.teal} strokeWidth="3" strokeLinecap="round" fill="none"/>
               <path d="M18 56 V34 a14 14 0 0 1 28 0 V56" stroke={BB.teal} strokeWidth="2.4" strokeLinecap="round" fill="none" opacity="0.55"/>
               <line x1="6" y1="56" x2="58" y2="56" stroke={BB.teal} strokeWidth="3" strokeLinecap="round"/>
               <circle cx="32" cy="34" r="3.2" fill="#b85e3a"/>
             </svg>
-            <span style={{ fontWeight: 600, fontSize: 15, letterSpacing: -0.3, color: BB.ink }}>Our Learning</span>
-            <span style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: 17, color: BB.teal }}>portal</span>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 3 }}>
+              <span className="hidden sm:inline" style={{ fontWeight: 600, fontSize: 14, letterSpacing: -0.3, color: BB.ink, lineHeight: 1 }}>Our Learning</span>
+              <span style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: 15, color: BB.teal, lineHeight: 1 }}>portal</span>
+            </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            {/* Mode switcher */}
+          {/* Right: mode pills + bell + avatar */}
+          <div className="flex items-center gap-1">
             {ROLE_MODES.map(m => {
               const active = user?.role === m.role
               return (
                 <button key={m.role} disabled={active}
                   onClick={async () => { try { await login(m.email, m.pass); navigate(m.path) } catch {} }}
                   style={{
-                    fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 99,
+                    fontSize: 10, fontWeight: 700, padding: '3px 7px', borderRadius: 99,
                     border: `1.5px solid ${active ? BB.teal : 'rgba(28,42,44,0.18)'}`,
                     background: active ? BB.teal : 'rgba(255,255,255,0.75)',
                     color: active ? '#fff' : BB.inkSoft,
                     cursor: active ? 'default' : 'pointer',
                     backdropFilter: 'blur(8px)',
+                    whiteSpace: 'nowrap',
                   }}
                 >
-                  {active ? `✓ ${m.label}` : m.label}
+                  {active ? '✓ ' : ''}
+                  <span className="hidden sm:inline">{m.label}</span>
+                  <span className="sm:hidden">{m.label[0]}</span>
                 </button>
               )
             })}
-            <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,.65)', border: '1px solid rgba(255,255,255,.6)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: 4 }}>
-              <Icon name="bell" size={18} color={BB.ink} />
+            <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,.65)', border: '1px solid rgba(255,255,255,.6)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: 2 }}>
+              <Icon name="bell" size={16} color={BB.ink} />
             </div>
             <button onClick={() => { logout(); navigate(R.LOGIN) }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-              <Avatar name={user?.name ?? ''} color={BB.teal} size={36} />
+              <Avatar name={user?.name ?? ''} color={BB.teal} size={32} />
             </button>
           </div>
         </div>
