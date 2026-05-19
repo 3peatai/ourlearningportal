@@ -686,7 +686,7 @@ export default function AdminInvoices() {
   const overdueCount = invoices.filter(i => i.status === 'OVERDUE').length
 
   return (
-    <div style={{ padding: '28px 32px', display: 'flex', flexDirection: 'column', gap: 24, minHeight: '100%', background: '#faf9f6' }}>
+    <div className="p-5 md:p-8" style={{ display: 'flex', flexDirection: 'column', gap: 20, minHeight: '100%', background: '#faf9f6' }}>
 
       {/* ── Page header ── */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
@@ -712,8 +712,8 @@ export default function AdminInvoices() {
               <Send size={14} /> Send {selected.size} draft{selected.size > 1 ? 's' : ''}
             </button>
           )}
-          <button onClick={exportAll} style={ghostBtn}><Download size={14} /> Xero CSV</button>
-          <button onClick={() => setShowGenerateAll(true)} style={ghostBtn}>
+          <button className="hidden md:flex" onClick={exportAll} style={ghostBtn}><Download size={14} /> Xero CSV</button>
+          <button className="hidden md:flex" onClick={() => setShowGenerateAll(true)} style={ghostBtn}>
             <Users size={14} /> Generate All
           </button>
           <button onClick={() => setShowGenerate(true)} style={primaryBtn}>
@@ -722,44 +722,46 @@ export default function AdminInvoices() {
         </div>
       </div>
 
-      {/* ── KPI chips ── */}
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-        {[
-          { label: 'Draft',   count: draftCount,   color: BB.inkSoft, bg: 'rgba(255,255,255,0.9)' },
-          { label: 'Sent',    count: sentCount,    color: BB.teal,    bg: `${BB.amber}25` },
-          { label: 'Paid',    count: paidCount,    color: BB.teal,    bg: `${BB.teal}12` },
-          { label: 'Overdue', count: overdueCount, color: BB.coral,   bg: `${BB.coral}12` },
-        ].map(k => (
-          <button
-            key={k.label}
-            onClick={() => setStatusFilter(statusFilter === k.label.toUpperCase() ? '' : k.label.toUpperCase())}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px',
-              borderRadius: 99, border: `1.5px solid ${statusFilter === k.label.toUpperCase() ? k.color : 'rgba(28,42,44,0.12)'}`,
-              background: statusFilter === k.label.toUpperCase() ? k.bg : 'rgba(255,255,255,0.8)',
-              cursor: 'pointer', transition: 'all 0.15s',
-            }}
-          >
-            <span style={{ fontSize: 20, fontWeight: 700, color: k.color, lineHeight: 1, fontFamily: "'Fraunces', serif" }}>{k.count}</span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: k.color, textTransform: 'uppercase', letterSpacing: 0.5 }}>{k.label}</span>
-          </button>
-        ))}
-
-        {/* Month filter */}
+      {/* ── KPI chips + month filter ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {[
+            { label: 'Draft',   count: draftCount,   color: BB.inkSoft, bg: 'rgba(255,255,255,0.9)' },
+            { label: 'Sent',    count: sentCount,    color: BB.teal,    bg: `${BB.amber}25` },
+            { label: 'Paid',    count: paidCount,    color: BB.teal,    bg: `${BB.teal}12` },
+            { label: 'Overdue', count: overdueCount, color: BB.coral,   bg: `${BB.coral}12` },
+          ].map(k => (
+            <button
+              key={k.label}
+              onClick={() => setStatusFilter(statusFilter === k.label.toUpperCase() ? '' : k.label.toUpperCase())}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px',
+                borderRadius: 99, border: `1.5px solid ${statusFilter === k.label.toUpperCase() ? k.color : 'rgba(28,42,44,0.12)'}`,
+                background: statusFilter === k.label.toUpperCase() ? k.bg : 'rgba(255,255,255,0.8)',
+                cursor: 'pointer', transition: 'all 0.15s',
+              }}
+            >
+              <span style={{ fontSize: 20, fontWeight: 700, color: k.color, lineHeight: 1, fontFamily: "'Fraunces', serif" }}>{k.count}</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: k.color, textTransform: 'uppercase', letterSpacing: 0.5 }}>{k.label}</span>
+            </button>
+          ))}
+        </div>
+        {/* Month filter — full width on mobile, auto-width on desktop */}
         <select
           value={selectedMonth}
           onChange={e => setSelectedMonth(e.target.value)}
-          style={{ ...inputStyle, width: 180, marginLeft: 'auto', borderRadius: 99, paddingLeft: 14 }}
+          style={{ ...inputStyle, borderRadius: 99, paddingLeft: 14 }}
+          className="md:w-48"
         >
           {months.map(m => <option key={m.val} value={m.val}>{m.label}</option>)}
         </select>
       </div>
 
       {/* ── Invoice list ── */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 0, borderRadius: 14, overflow: 'hidden', boxShadow: '0 1px 3px rgba(28,42,44,0.08), 0 0 0 1px rgba(28,42,44,0.06)' }}>
+      <div style={{ borderRadius: 14, overflow: 'hidden', boxShadow: '0 1px 3px rgba(28,42,44,0.08), 0 0 0 1px rgba(28,42,44,0.06)' }}>
 
-        {/* List header */}
-        <div style={{ display: 'grid', gridTemplateColumns: '36px 120px 200px 150px 100px 110px 110px 120px 56px', alignItems: 'center', padding: '10px 16px', background: 'rgba(255,255,255,0.6)', borderBottom: '1px solid rgba(28,42,44,0.08)' }}>
+        {/* Desktop table header (hidden on mobile) */}
+        <div className="hidden md:grid" style={{ gridTemplateColumns: '36px 120px 200px 150px 100px 110px 110px 120px 56px', alignItems: 'center', padding: '10px 16px', background: 'rgba(255,255,255,0.6)', borderBottom: '1px solid rgba(28,42,44,0.08)' }}>
           <div>
             <input type="checkbox"
               checked={selected.size === invoices.length && invoices.length > 0}
@@ -770,64 +772,113 @@ export default function AdminInvoices() {
           ))}
         </div>
 
-        {/* Rows */}
+        {/* Empty / loading states */}
         {isLoading ? (
           <div style={{ padding: 48, textAlign: 'center', color: BB.inkMute, background: '#fff' }}>Loading…</div>
         ) : invoices.length === 0 ? (
           <div style={{ padding: '56px 24px', textAlign: 'center', background: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 56, height: 56, borderRadius: '50%', background: `${BB.bg}`, border: `2px dashed rgba(28,42,44,0.15)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 56, height: 56, borderRadius: '50%', background: BB.bg, border: `2px dashed rgba(28,42,44,0.15)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <FileText size={22} color={BB.inkMute} />
             </div>
             <div style={{ fontSize: 15, fontWeight: 700, color: BB.inkSoft, fontFamily: "'Fraunces', serif" }}>No invoices yet</div>
             <div style={{ fontSize: 13, color: BB.inkMute }}>Generate an invoice to get started</div>
           </div>
         ) : (
-          invoices.map((inv, idx) => (
-            <div
-              key={inv.id}
-              onClick={() => setSelectedInv(inv)}
-              style={{
-                display: 'grid', gridTemplateColumns: '36px 120px 200px 150px 100px 110px 110px 120px 56px',
-                alignItems: 'center', padding: '14px 16px',
-                background: idx % 2 === 0 ? '#fff' : 'rgba(244,237,224,0.3)',
-                borderBottom: '1px solid rgba(28,42,44,0.05)',
-                cursor: 'pointer', transition: 'background 0.12s',
-                borderLeft: `3px solid ${STATUS_BORDER[inv.status] ?? 'transparent'}`,
-              }}
-              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = `${BB.amber}18` }}
-              onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = idx % 2 === 0 ? '#fff' : 'rgba(244,237,224,0.3)' }}
-            >
-              <div onClick={e => { e.stopPropagation(); toggleSelect(inv.id) }}>
-                <input type="checkbox" checked={selected.has(inv.id)}
-                  onChange={() => toggleSelect(inv.id)} onClick={e => e.stopPropagation()} />
+          invoices.map((inv, idx) => {
+            const rowBg = idx % 2 === 0 ? '#fff' : 'rgba(244,237,224,0.3)'
+            const accentBorder = `3px solid ${STATUS_BORDER[inv.status] ?? 'transparent'}`
+            return (
+              <div key={inv.id}>
+                {/* ── Desktop row ── */}
+                <div
+                  className="hidden md:grid"
+                  onClick={() => setSelectedInv(inv)}
+                  style={{
+                    gridTemplateColumns: '36px 120px 200px 150px 100px 110px 110px 120px 56px',
+                    alignItems: 'center', padding: '14px 16px',
+                    background: rowBg, borderBottom: '1px solid rgba(28,42,44,0.05)',
+                    cursor: 'pointer', transition: 'background 0.12s',
+                    borderLeft: accentBorder,
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = `${BB.amber}18` }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = rowBg }}
+                >
+                  <div onClick={e => { e.stopPropagation(); toggleSelect(inv.id) }}>
+                    <input type="checkbox" checked={selected.has(inv.id)}
+                      onChange={() => toggleSelect(inv.id)} onClick={e => e.stopPropagation()} />
+                  </div>
+                  <div style={{ fontFamily: "'Fraunces', serif", fontWeight: 500, color: BB.ink, fontSize: 14 }}>
+                    OLP-{inv.id.slice(-6).toUpperCase()}
+                  </div>
+                  <div style={{ fontSize: 14, color: BB.ink, fontWeight: 500 }}>{inv.parent.name}</div>
+                  <div style={{ fontSize: 12, color: BB.inkSoft }}>{inv.periodStart} – {inv.periodEnd}</div>
+                  <div style={{ fontSize: 12, color: BB.inkSoft }}>{inv.dueDate ?? '—'}</div>
+                  <div><StatusBadge status={inv.status} /></div>
+                  <div><PaymentStatusBadge inv={inv} /></div>
+                  <div style={{ fontFamily: "'Fraunces', serif", fontWeight: 600, fontSize: 15, color: BB.teal, textAlign: 'right' }}>
+                    {fmt(inv.total)}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'flex-end' }}>
+                    {(inv.status === 'SENT' || inv.status === 'OVERDUE') && (
+                      <button
+                        onClick={e => { e.stopPropagation(); sendReminder.mutate(inv.id) }}
+                        disabled={sendReminder.isPending}
+                        style={{ padding: '3px 7px', background: '#fff8e6', color: '#c07a00', border: '1px solid #ffe08a', borderRadius: 6, cursor: 'pointer', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 3 }}
+                      >
+                        <Bell size={10} />
+                      </button>
+                    )}
+                    <ChevronRight size={15} style={{ color: BB.inkMute, flexShrink: 0 }} />
+                  </div>
+                </div>
+
+                {/* ── Mobile card ── */}
+                <div
+                  className="md:hidden"
+                  onClick={() => setSelectedInv(inv)}
+                  style={{
+                    background: rowBg, borderBottom: '1px solid rgba(28,42,44,0.06)',
+                    borderLeft: accentBorder, padding: '14px 16px', cursor: 'pointer',
+                  }}
+                >
+                  {/* Row 1: invoice # + amount */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 7 }}>
+                    <div style={{ fontFamily: "'Fraunces', serif", fontWeight: 500, color: BB.ink, fontSize: 15 }}>
+                      OLP-{inv.id.slice(-6).toUpperCase()}
+                    </div>
+                    <div style={{ fontFamily: "'Fraunces', serif", fontWeight: 600, fontSize: 16, color: BB.teal }}>
+                      {fmt(inv.total)}
+                    </div>
+                  </div>
+                  {/* Row 2: client + badges */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8, flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: 14, color: BB.ink, fontWeight: 500 }}>{inv.parent.name}</span>
+                    <StatusBadge status={inv.status} />
+                    {inv.status !== 'DRAFT' && <PaymentStatusBadge inv={inv} />}
+                  </div>
+                  {/* Row 3: period + actions */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ fontSize: 12, color: BB.inkSoft }}>
+                      {inv.periodStart} – {inv.periodEnd}
+                      {inv.dueDate && <span style={{ marginLeft: 8, color: BB.inkMute }}>· Due {inv.dueDate}</span>}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      {(inv.status === 'SENT' || inv.status === 'OVERDUE') && (
+                        <button
+                          onClick={e => { e.stopPropagation(); sendReminder.mutate(inv.id) }}
+                          disabled={sendReminder.isPending}
+                          style={{ padding: '4px 8px', background: '#fff8e6', color: '#c07a00', border: '1px solid #ffe08a', borderRadius: 6, cursor: 'pointer', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 3 }}
+                        >
+                          <Bell size={10} /> Remind
+                        </button>
+                      )}
+                      <ChevronRight size={15} style={{ color: BB.inkMute }} />
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div style={{ fontFamily: "'Fraunces', serif", fontWeight: 500, color: BB.ink, fontSize: 14 }}>
-                OLP-{inv.id.slice(-6).toUpperCase()}
-              </div>
-              <div style={{ fontSize: 14, color: BB.ink, fontWeight: 500 }}>{inv.parent.name}</div>
-              <div style={{ fontSize: 12, color: BB.inkSoft }}>
-                {inv.periodStart} – {inv.periodEnd}
-              </div>
-              <div style={{ fontSize: 12, color: BB.inkSoft }}>{inv.dueDate ?? '—'}</div>
-              <div><StatusBadge status={inv.status} /></div>
-              <div><PaymentStatusBadge inv={inv} /></div>
-              <div style={{ fontFamily: "'Fraunces', serif", fontWeight: 600, fontSize: 15, color: BB.teal, textAlign: 'right' }}>
-                {fmt(inv.total)}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'flex-end' }}>
-                {(inv.status === 'SENT' || inv.status === 'OVERDUE') && (
-                  <button
-                    onClick={e => { e.stopPropagation(); sendReminder.mutate(inv.id) }}
-                    disabled={sendReminder.isPending}
-                    style={{ padding: '3px 7px', background: '#fff8e6', color: '#c07a00', border: '1px solid #ffe08a', borderRadius: 6, cursor: 'pointer', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 3 }}
-                  >
-                    <Bell size={10} />
-                  </button>
-                )}
-                <ChevronRight size={15} style={{ color: BB.inkMute, flexShrink: 0 }} />
-              </div>
-            </div>
-          ))
+            )
+          })
         )}
       </div>
 
