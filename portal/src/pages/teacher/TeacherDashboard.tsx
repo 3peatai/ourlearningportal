@@ -36,8 +36,14 @@ function SessionSkeleton() {
 
 const currentMondayStr = () => format(startOfWeek(new Date(), { weekStartsOn: 1 }), 'yyyy-MM-dd')
 
+const ROLE_MODES = [
+  { label: 'Parent',  role: 'PARENT',  email: 'sarah.lam@hkmail.com',         pass: 'parent123',  path: R.PARENT_DASHBOARD  },
+  { label: 'Teacher', role: 'TEACHER', email: 'beverly@ourlearningportal.com', pass: 'teacher123', path: R.TEACHER_DASHBOARD },
+  { label: 'Admin',   role: 'ADMIN',   email: 'admin@ourlearningportal.com',   pass: 'admin123',   path: R.ADMIN_DASHBOARD   },
+]
+
 export default function TeacherDashboard() {
-  const { user, logout } = useAuth()
+  const { user, logout, login } = useAuth()
   const navigate = useNavigate()
 
   const todayStr = format(new Date(), 'yyyy-MM-dd')
@@ -78,6 +84,32 @@ export default function TeacherDashboard() {
     <div className="min-h-screen" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
       <ClassroomBG seed={7} />
       <div className="relative flex flex-col min-h-screen">
+
+        {/* ── Mode switcher ── */}
+        <div style={{ display: 'flex', gap: 6, padding: '8px 16px 0', position: 'relative', zIndex: 10 }}>
+          {ROLE_MODES.map(m => {
+            const active = user?.role === m.role
+            return (
+              <button
+                key={m.role}
+                disabled={active}
+                onClick={async () => { try { await login(m.email, m.pass); navigate(m.path) } catch {} }}
+                style={{
+                  fontSize: 11, fontWeight: 700, padding: '4px 11px', borderRadius: 99,
+                  border: `1.5px solid ${active ? BB.teal : 'rgba(28,42,44,0.18)'}`,
+                  background: active ? BB.teal : 'rgba(255,255,255,0.72)',
+                  color: active ? '#fff' : BB.inkSoft,
+                  cursor: active ? 'default' : 'pointer',
+                  backdropFilter: 'blur(8px)',
+                  transition: 'all .15s',
+                }}
+              >
+                {active ? `✓ ${m.label}` : m.label}
+              </button>
+            )
+          })}
+          <span style={{ fontSize: 10, color: BB.inkMute, alignSelf: 'center', marginLeft: 4 }}>demo mode</span>
+        </div>
 
         {/* ── Top bar ── */}
         <div className="flex items-center justify-between px-4 pt-4 pb-2 relative z-10">

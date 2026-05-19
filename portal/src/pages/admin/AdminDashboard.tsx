@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
 import {
   GraduationCap, BookOpen,
@@ -8,6 +9,14 @@ import {
 import { useAdminStats, useAdminActivity, useTodaySessions, useUpdateClass, useDevReset } from '../../hooks/admin'
 import type { CalendarSession, ActivityEvent } from '../../hooks/admin'
 import { Skeleton } from '../../components/ui/Skeleton'
+import { useAuth } from '../../context/AuthContext'
+import { R } from '../../lib/routes'
+
+const ROLE_MODES = [
+  { label: 'Parent',  role: 'PARENT',  email: 'sarah.lam@hkmail.com',         pass: 'parent123',  path: R.PARENT_DASHBOARD  },
+  { label: 'Teacher', role: 'TEACHER', email: 'beverly@ourlearningportal.com', pass: 'teacher123', path: R.TEACHER_DASHBOARD },
+  { label: 'Admin',   role: 'ADMIN',   email: 'admin@ourlearningportal.com',   pass: 'admin123',   path: R.ADMIN_DASHBOARD   },
+]
 
 // ─── Teacher colour map (by first name) ──────────────────────────────────────
 const TEACHER_COLORS: Record<string, string> = {
@@ -294,6 +303,8 @@ function StatCardSkeleton() {
 
 // ─── Main Dashboard ───────────────────────────────────────────────────────────
 export default function AdminDashboard() {
+  const { user, login } = useAuth()
+  const navigate = useNavigate()
   const { data: stats, isLoading: loadingStats } = useAdminStats()
   const { data: activity = [], isLoading: loadingActivity } = useAdminActivity()
   const { data: todaySessions = [], isLoading: loadingToday } = useTodaySessions()
@@ -312,9 +323,35 @@ export default function AdminDashboard() {
     <div style={{ padding: '28px 32px', maxWidth: 1400, margin: '0 auto' }}>
 
       {/* Page header */}
-      <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 900, color: '#1A1A2E', margin: 0, letterSpacing: -0.5 }}>Dashboard</h1>
-        <p style={{ fontSize: 14, color: '#9CA3AF', margin: '4px 0 0', fontWeight: 500 }}>{format(new Date(), 'EEEE, d MMMM yyyy')}</p>
+      <div style={{ marginBottom: 28, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+        <div>
+          <h1 style={{ fontSize: 26, fontWeight: 900, color: '#1A1A2E', margin: 0, letterSpacing: -0.5 }}>Dashboard</h1>
+          <p style={{ fontSize: 14, color: '#9CA3AF', margin: '4px 0 0', fontWeight: 500 }}>{format(new Date(), 'EEEE, d MMMM yyyy')}</p>
+        </div>
+        {/* Mode switcher */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          {ROLE_MODES.map(m => {
+            const active = user?.role === m.role
+            return (
+              <button
+                key={m.role}
+                disabled={active}
+                onClick={async () => { try { await login(m.email, m.pass); navigate(m.path) } catch {} }}
+                style={{
+                  fontSize: 11, fontWeight: 700, padding: '5px 12px', borderRadius: 99,
+                  border: `1.5px solid ${active ? '#0c7872' : 'rgba(28,42,44,0.18)'}`,
+                  background: active ? '#0c7872' : '#fff',
+                  color: active ? '#fff' : '#4a5b5c',
+                  cursor: active ? 'default' : 'pointer',
+                  transition: 'all .15s',
+                }}
+              >
+                {active ? `✓ ${m.label}` : m.label}
+              </button>
+            )
+          })}
+          <span style={{ fontSize: 10, color: '#9CA3AF', marginLeft: 4 }}>demo mode</span>
+        </div>
       </div>
 
       {/* Stat cards — 4-column desktop, 2-column tablet/mobile */}

@@ -42,12 +42,12 @@ export function monthStr(d: Date) {
 // ─── Static Data ──────────────────────────────────────────────────────────────
 
 export const MOCK_TEACHERS = [
-  { id: 't1', name: 'Beverly Wong',  firstName: 'Beverly', salutation: 'Ms', email: 'beverly@booksandbrains.hk', speciality: 'Mathematics',     color: '#F5C842', ratePerHour: 350, sessionsThisMonth: 18, hoursThisMonth: 18, estimatedPayThisMonth: 6300 },
-  { id: 't2', name: 'Tristan Hall',  firstName: 'Tristan', salutation: 'Mr', email: 'tristan@booksandbrains.hk', speciality: 'Literacy',         color: '#E8623A', ratePerHour: 300, sessionsThisMonth: 14, hoursThisMonth: 14, estimatedPayThisMonth: 4200 },
-  { id: 't3', name: 'May Chen',      firstName: 'May',     salutation: 'Ms', email: 'may@booksandbrains.hk',     speciality: 'Science',           color: '#4AADBC', ratePerHour: 325, sessionsThisMonth: 10, hoursThisMonth: 15, estimatedPayThisMonth: 4875 },
-  { id: 't4', name: 'Cato Patel',    firstName: 'Cato',    salutation: 'Mr', email: 'cato@booksandbrains.hk',    speciality: 'Creative Arts',     color: '#9B5DE5', ratePerHour: 280, sessionsThisMonth: 8,  hoursThisMonth: 8,  estimatedPayThisMonth: 2240 },
-  { id: 't5', name: 'Gwen Torres',   firstName: 'Gwen',    salutation: 'Ms', email: 'gwen@booksandbrains.hk',    speciality: 'English Writing',   color: '#06D6A0', ratePerHour: 310, sessionsThisMonth: 12, hoursThisMonth: 18, estimatedPayThisMonth: 5580 },
-  { id: 't6', name: 'Donna Lam',     firstName: 'Donna',   salutation: 'Ms', email: 'donna@booksandbrains.hk',   speciality: 'Music Theory',      color: '#F0A94A', ratePerHour: 290, sessionsThisMonth: 6,  hoursThisMonth: 6,  estimatedPayThisMonth: 1740 },
+  { id: 't1', name: 'Beverly Wong',  firstName: 'Beverly', salutation: 'Ms', email: 'beverly@ourlearningportal.com', speciality: 'Mathematics',     color: '#F5C842', ratePerHour: 350, sessionsThisMonth: 18, hoursThisMonth: 18, estimatedPayThisMonth: 6300 },
+  { id: 't2', name: 'Tristan Hall',  firstName: 'Tristan', salutation: 'Mr', email: 'tristan@ourlearningportal.com', speciality: 'Literacy',         color: '#E8623A', ratePerHour: 300, sessionsThisMonth: 14, hoursThisMonth: 14, estimatedPayThisMonth: 4200 },
+  { id: 't3', name: 'May Chen',      firstName: 'May',     salutation: 'Ms', email: 'may@ourlearningportal.com',     speciality: 'Science',           color: '#4AADBC', ratePerHour: 325, sessionsThisMonth: 10, hoursThisMonth: 15, estimatedPayThisMonth: 4875 },
+  { id: 't4', name: 'Cato Patel',    firstName: 'Cato',    salutation: 'Mr', email: 'cato@ourlearningportal.com',    speciality: 'Creative Arts',     color: '#9B5DE5', ratePerHour: 280, sessionsThisMonth: 8,  hoursThisMonth: 8,  estimatedPayThisMonth: 2240 },
+  { id: 't5', name: 'Gwen Torres',   firstName: 'Gwen',    salutation: 'Ms', email: 'gwen@ourlearningportal.com',    speciality: 'English Writing',   color: '#06D6A0', ratePerHour: 310, sessionsThisMonth: 12, hoursThisMonth: 18, estimatedPayThisMonth: 5580 },
+  { id: 't6', name: 'Donna Lam',     firstName: 'Donna',   salutation: 'Ms', email: 'donna@ourlearningportal.com',   speciality: 'Music Theory',      color: '#F0A94A', ratePerHour: 290, sessionsThisMonth: 6,  hoursThisMonth: 6,  estimatedPayThisMonth: 1740 },
 ]
 
 export const MOCK_PROGRAMMES = [

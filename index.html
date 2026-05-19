@@ -81,7 +81,6 @@ const COPY = {
       features: [
         'View upcoming sessions and full booking history',
         'Reschedule or cancel classes with two taps',
-        'Enrol siblings in new programmes',
         'Track invoices and pay in one place',
       ],
     },
@@ -91,7 +90,6 @@ const COPY = {
       features: [
         'Your full weekly teaching schedule at a glance',
         'Mark sessions complete or flag for make-up',
-        'Open student notes and learning history',
         'See earnings, download payslips',
         'Set and update your availability',
       ],
@@ -988,15 +986,7 @@ const Demo = () => {
               <Icon name={r.icon} size={17} stroke={2} style={{ color: r.role === 'Teacher' ? '#fffcf4' : C.teal2 }}/>
             </div>
             <div style={{ fontFamily: 'Fraunces,serif', fontStyle: 'italic', fontSize: 22, color: '#fffcf4', marginBottom: 6, letterSpacing: -0.3 }}>{r.role}</div>
-            <div style={{ fontSize: 13, color: 'rgba(255,252,244,0.55)', marginBottom: 20, lineHeight: 1.55 }}>{r.desc}</div>
-            {/* Credentials */}
-            <div style={{ borderTop: '1px solid rgba(255,252,244,0.08)', paddingTop: 14 }}>
-              <div style={{ fontSize: 9, fontFamily: 'JetBrains Mono,monospace', color: r.accent, letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 6 }}>Login credentials</div>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: 'rgba(255,252,244,0.45)', lineHeight: 1.8 }}>
-                <div>{r.email}</div>
-                <div>{r.password}</div>
-              </div>
-            </div>
+            <div style={{ fontSize: 13, color: 'rgba(255,252,244,0.55)', lineHeight: 1.55 }}>{r.desc}</div>
           </a>
         ))}
       </div>

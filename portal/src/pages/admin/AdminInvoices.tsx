@@ -759,7 +759,7 @@ export default function AdminInvoices() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 0, borderRadius: 14, overflow: 'hidden', boxShadow: '0 1px 3px rgba(28,42,44,0.08), 0 0 0 1px rgba(28,42,44,0.06)' }}>
 
         {/* List header */}
-        <div style={{ display: 'grid', gridTemplateColumns: '36px 130px 1fr 160px 100px 120px auto 110px 40px', alignItems: 'center', padding: '10px 16px', background: 'rgba(255,255,255,0.6)', borderBottom: '1px solid rgba(28,42,44,0.08)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '36px 120px 200px 150px 100px 110px 110px 120px 56px', alignItems: 'center', padding: '10px 16px', background: 'rgba(255,255,255,0.6)', borderBottom: '1px solid rgba(28,42,44,0.08)' }}>
           <div>
             <input type="checkbox"
               checked={selected.size === invoices.length && invoices.length > 0}
@@ -787,7 +787,7 @@ export default function AdminInvoices() {
               key={inv.id}
               onClick={() => setSelectedInv(inv)}
               style={{
-                display: 'grid', gridTemplateColumns: '36px 130px 1fr 160px 100px 120px auto 110px 40px',
+                display: 'grid', gridTemplateColumns: '36px 120px 200px 150px 100px 110px 110px 120px 56px',
                 alignItems: 'center', padding: '14px 16px',
                 background: idx % 2 === 0 ? '#fff' : 'rgba(244,237,224,0.3)',
                 borderBottom: '1px solid rgba(28,42,44,0.05)',

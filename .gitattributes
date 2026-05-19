@@ -1,0 +1,5 @@
+# Always use LF for shell scripts deployed to Linux (Vercel)
+*.sh text eol=lf
+
+# Default: auto-normalize other text files
+* text=auto
