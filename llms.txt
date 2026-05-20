@@ -1,0 +1,43 @@
+# Our Learning Portal
+
+> Bespoke booking and operations portals for tutoring practices, learning centres and sports schools in Hong Kong and Singapore.
+
+## What we do
+
+Our Learning Portal designs and builds custom web portals for education businesses. Each portal is built around how the individual school or practice actually runs — not adapted from a generic template, and not a per-seat SaaS subscription.
+
+The portal covers three views:
+
+- **Parent portal** — upcoming class schedule, self-service rescheduling and cancellation, booking history, invoice viewing
+- **Teacher portal** — weekly teaching schedule, availability submission, payslip viewing
+- **Admin portal** — student and enrolment management, class calendar, invoice generation and sending, teacher roster and costs, expense tracking
+
+## Who it is for
+
+- Tutoring practices (one-to-one and small-group)
+- Learning centres (term-based programmes, multiple classrooms)
+- Sports schools (squads and tiers, coach management, term fees)
+
+Primary markets: Hong Kong and Singapore.
+
+## Key differentiators
+
+- Bespoke build — shaped to each client's programmes, pricing and workflows
+- Replaces WhatsApp-based rescheduling, spreadsheet invoicing and fragmented admin tools
+- Flat build fee plus a sensible monthly platform fee — no per-seat pricing
+- Studio with offices in both Hong Kong and Singapore (same timezone, real conversations)
+
+## Pricing model
+
+A one-time build fee to design and configure the portal, plus a monthly platform fee that scales sensibly with the size of the school. No per-seat licences.
+
+## Contact and booking
+
+- Website: https://ourlearningportal.com
+- Book a free 15-minute discovery call: https://calendar.app.google/7XWHdNcu2REb8oM79
+- Reply within 1 working day
+
+## Offices
+
+- Hong Kong: 21/F, 23 Luard Road, Wan Chai, Hong Kong
+- Singapore: 160 Robinson Road, #14-04, SBF Center, Singapore 068914
