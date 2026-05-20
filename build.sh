@@ -26,4 +26,6 @@ cp -f portal/public/favicon-192-android.png public/ 2>/dev/null || true
 cp -f portal/public/favicon-512-android.png public/ 2>/dev/null || true
 cp -f portal/public/site.webmanifest public/ 2>/dev/null || true
 
+cp -f llms.txt public/ 2>/dev/null || true
+
 echo "✓ Build complete. Output in public/"
