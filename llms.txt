@@ -10,7 +10,7 @@ The portal covers three views:
 
 - **Parent portal** - upcoming class schedule, self-service rescheduling and cancellation, booking history, invoice viewing
 - **Teacher portal** - weekly teaching schedule, availability submission, payslip viewing
-- **Admin portal** - student and enrolment management, class calendar, invoice generation and sending, teacher roster and costs, expense tracking
+- **Admin portal** - student and enrolment management, class calendar, invoice generation that pushes to Xero, teacher roster and costs, expense tracking
 
 ## Who it is for
 
@@ -27,6 +27,7 @@ Primary markets: Hong Kong and Singapore.
 
 - Bespoke build, shaped to each client's programmes, pricing and workflows
 - Replaces WhatsApp-based rescheduling, spreadsheet invoicing and fragmented admin tools
+- Invoices push to Xero
 - One-off build fee plus a monthly platform fee as little as HK$1,500/month. No per-seat pricing
 - Studio with offices in both Hong Kong and Singapore (same timezone, real conversations)
 

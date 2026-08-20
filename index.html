@@ -150,11 +150,11 @@ const COPY = {
   modules: [
     { key: 'parent', name: 'Parent', tagline: 'A calm home for the family timetable.', features: ['View upcoming sessions and full booking history','Reschedule or cancel classes with two taps','Track invoices and pay in one place'] },
     { key: 'teacher', name: 'Teacher', tagline: 'Less admin, more teaching.', features: ['Your full weekly teaching schedule at a glance','Mark sessions complete or flag for make-up','See earnings, download payslips','Set and update your availability'] },
-    { key: 'admin', name: 'Admin', tagline: 'The brain of the operation.', features: ['Manage students, parents and enrolments','Weekly calendar with live overlap detection','Build programmes and assign teachers','Generate invoices and send payment reminders','Track teacher costs and issue payslips'] }
+    { key: 'admin', name: 'Admin', tagline: 'The brain of the operation.', features: ['Manage students, parents and enrolments','Weekly calendar with live overlap detection','Build programmes and assign teachers','Generate invoices and push them to Xero','Track teacher costs and issue payslips'] }
   ],
   whyUs: [
     { title: 'Built where you teach', body: 'Studios in Hong Kong and Singapore. Real timezone, real conversations, real handover.' },
-    { title: 'Bespoke, not boilerplate', body: 'Your portal is shaped to how your practice actually runs. Programmes, pricing, payslips, the lot.' },
+    { title: 'Bespoke, not boilerplate', body: 'Your portal is shaped to how your practice actually runs. Programmes, pricing, payslips, invoices to Xero, the lot.' },
     { title: 'Honest pricing', body: 'A one-off build fee, then as little as HK$1,500/month. No per-seat surprises.' },
     { title: 'We stay after launch', body: 'Same team that builds it supports it. Slack us, we reply. New term, new feature.' }
   ],
@@ -228,7 +228,7 @@ const ContactModal = ({ onClose }) => {
       React.createElement('button', {onClick:onClose, style:{position:'absolute',top:16,right:16,width:32,height:32,border:`1px solid ${C.hairline}`,background:'#fffcf4',cursor:'pointer'}}, '\u2715'),
       React.createElement(Tag, {style:{marginBottom:14}}, 'Get in touch'),
       React.createElement('h2', {style:{fontFamily:'Fraunces,serif',fontWeight:300,fontSize:34,color:C.ink}}, 'How would you like to connect?'),
-      React.createElement('p', {style:{fontSize:13,color:C.ink2}}, 'Book a free 15-minute intro call, or send us a message and we will get back to you.'),
+      React.createElement('p', {style:{fontSize:13,color:C.ink2}}, 'Book a 15-minute demo, or send us a message and we will get back to you.'),
       React.createElement('a', {href:GCAL_URL, target:'_blank', rel:'noreferrer', style:{display:'inline-block',marginTop:20,padding:'15px 24px',background:C.teal,color:'#fffcf4',borderRadius:4}}, 'Book a 15-min demo')
     )
   );
@@ -239,7 +239,7 @@ const Nav = () => {
   const openModal = useModal();
   return React.createElement('div', {style:{display:'flex',alignItems:'center',justifyContent:'space-between',padding: mob ? '18px 20px' : '24px 64px',position:'relative',zIndex:5,borderBottom:`1px solid ${C.hairline}`}},
     React.createElement(Wordmark),
-    React.createElement('button', {onClick:openModal, style:{padding:'12px 20px',borderRadius:4,border:`1px solid ${C.ink}`,background:C.ink,color:C.paper,fontWeight:500,fontSize:13}}, 'Book a call \u2192')
+    React.createElement('button', {onClick:openModal, style:{padding:'12px 20px',borderRadius:4,border:`1px solid ${C.ink}`,background:C.ink,color:C.paper,fontWeight:500,fontSize:13}}, 'Book a 15-min demo')
   );
 };
 
@@ -254,10 +254,10 @@ const Hero = () => {
       ' for session businesses.'
     ),
     React.createElement('p', {style:{fontSize:15,lineHeight:1.65,color:C.ink2,maxWidth:620,marginTop:36}},
-      'We design and build booking and invoicing portals for session businesses: tutoring, language schools, STEM and coding, phonics, sports, music and dance. Quietly built in Hong Kong and Singapore. Not a template, not a per-seat SaaS.'
+      'We design and build booking and invoicing portals for session businesses: tutoring, language schools, STEM and coding, phonics, sports, music and dance. Invoices push to Xero. Quietly built in Hong Kong and Singapore. Not a template, not a per-seat SaaS.'
     ),
     React.createElement('div', {style:{marginTop:36,display:'flex',gap:18,flexWrap:'wrap',alignItems:'center'}},
-      React.createElement('button', {onClick:openModal, style:{padding:'18px 26px',borderRadius:4,border:'none',background:C.teal,color:'#fffcf4',fontSize:15,fontWeight:500}}, 'Book a free 15-min call'),
+      React.createElement('button', {onClick:openModal, style:{padding:'18px 26px',borderRadius:4,border:'none',background:C.teal,color:'#fffcf4',fontSize:15,fontWeight:500}}, COPY.hero.cta),
       React.createElement('a', {href:'/portal/login', style:{padding:'18px 24px',borderRadius:4,background:C.rust,color:'#fffcf4',fontSize:15,fontWeight:500,textDecoration:'none'}}, 'Try the demo \u2192'),
       React.createElement('div', {style:{fontSize:12,color:C.ink3}}, 'No obligation. Reply within 1 working day.')
     )
@@ -308,8 +308,8 @@ const Footer = () => {
     React.createElement('div', {style:{background:C.ink,color:C.paper,borderRadius:4,padding: mob ? 28 : 56}},
       React.createElement(Tag, {style:{marginBottom:18,color:C.aqua}}, 'Ready When You Are'),
       React.createElement('h2', {style:{fontFamily:'Fraunces,serif',fontWeight:300,fontSize: mob ? 44 : 72,color:C.paper}}, "Let's see if we're a fit."),
-      React.createElement('p', {style:{fontSize:16,color:'rgba(244,237,224,.7)'}}, 'A 15-minute call, on us. No deck, no script, no obligation.'),
-      React.createElement('button', {onClick:openModal, style:{marginTop:32,padding:'18px 26px',borderRadius:4,border:'none',background:C.aqua,color:C.teal2,fontWeight:600,fontSize:15}}, 'Book a free 15-min call'),
+      React.createElement('p', {style:{fontSize:16,color:'rgba(244,237,224,.7)'}}, 'A 15-minute demo, on us. No deck, no script, no obligation.'),
+      React.createElement('button', {onClick:openModal, style:{marginTop:32,padding:'18px 26px',borderRadius:4,border:'none',background:C.aqua,color:C.teal2,fontWeight:600,fontSize:15}}, COPY.hero.cta),
       React.createElement('div', {style:{marginTop:32,fontSize:13,color:'rgba(244,237,224,.6)'}},
         React.createElement('div', null, 'Hong Kong · ', COPY.contact.addressHK),
         React.createElement('div', null, 'Singapore · ', COPY.contact.addressSG),
