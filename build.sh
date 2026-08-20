@@ -12,7 +12,18 @@ echo "-> Assembling public/ output..."
 cd ..
 mkdir -p public
 
-cp index.html public/
+# Scout homepage lives as gzip+base64 parts under homepage-src/.
+EXPECTED_SHA="588294ec75b38feb1f5ad8fe9cb203f3e7f0645ce9c43905207d4e103c414962"
+cat homepage-src/p00.b64 homepage-src/p01.b64 homepage-src/p02.b64 \
+    homepage-src/p03.b64 homepage-src/p04.b64 homepage-src/p05.b64 \
+    homepage-src/p06.b64 homepage-src/p07.b64 homepage-src/p08.b64 \
+  | tr -d '\n\r ' | base64 -d | gzip -dc > public/index.html
+GOT=$(sha256sum public/index.html | awk '{print $1}')
+if [ "$GOT" != "$EXPECTED_SHA" ]; then
+  echo "Homepage SHA mismatch: got $GOT expected $EXPECTED_SHA" >&2
+  exit 1
+fi
+
 cp -f learning-centres.png public/ 2>/dev/null || true
 cp -f sports-schools.png public/ 2>/dev/null || true
 cp -f tutoring-practices.png public/ 2>/dev/null || true
