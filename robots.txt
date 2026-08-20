@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+Disallow: /portal
+
+User-agent: GPTBot
+Allow: /
+Disallow: /portal
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /portal
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /portal
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /portal
+
+Sitemap: https://www.ourlearningportal.com/sitemap.xml
