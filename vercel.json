@@ -3,5 +3,19 @@
   "outputDirectory": "public",
   "rewrites": [
     { "source": "/portal/:path*", "destination": "/portal/index.html" }
+  ],
+  "redirects": [
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "ourlearningportal.com" }],
+      "destination": "https://www.ourlearningportal.com/",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "ourlearningportal.com" }],
+      "destination": "https://www.ourlearningportal.com/:path*",
+      "permanent": true
+    }
   ]
 }
