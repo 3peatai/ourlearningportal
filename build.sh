@@ -13,7 +13,7 @@ cd ..
 mkdir -p public
 
 # Scout homepage lives as gzip+base64 parts under homepage-src/.
-EXPECTED_SHA="588294ec75b38feb1f5ad8fe9cb203f3e7f0645ce9c43905207d4e103c414962"
+EXPECTED_SHA="d4aeabe850cf4a58b1b563effd59420c12a02218ac46333baab6b5d1e17ef43b"
 cat homepage-src/p00.b64 homepage-src/p01.b64 homepage-src/p02.b64 \
     homepage-src/p03.b64 homepage-src/p04.b64 homepage-src/p05.b64 \
     homepage-src/p06.b64 homepage-src/p07.b64 homepage-src/p08.b64 \
