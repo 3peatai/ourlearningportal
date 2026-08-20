@@ -3,6 +3,349 @@
 <head>
 <meta charset="utf-8"/>
 <title>Our Learning Portal - Booking and invoicing portals for session businesses</title>
+<meta name="description" content="Bespoke booking and invoicing portals for tutoring, language, STEM, sports, music and phonics session businesses in Hong Kong and Singapore."/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="theme-color" content="#0c7872"/>
+<meta name="robots" content="index, follow"/>
+<meta name="author" content="Our Learning Portal"/>
+<link rel="canonical" href="https://www.ourlearningportal.com"/>
+  <link rel="alternate" type="text/plain" href="https://www.ourlearningportal.com/llms.txt" title="llms.txt"/>
+
+<!-- Open Graph -->
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://www.ourlearningportal.com"/>
+<meta property="og:site_name" content="Our Learning Portal"/>
+<meta property="og:title" content="Our Learning Portal - Booking and invoicing portals for session businesses"/>
+<meta property="og:description" content="Custom booking, scheduling and invoicing portals for session businesses in Hong Kong and Singapore. Built around how you run classes, not a template."/>
+<meta property="og:image" content="https://www.ourlearningportal.com/tutoring-practices.png"/>
+<meta property="og:locale" content="en_HK"/>
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Our Learning Portal - Booking and invoicing portals for session businesses"/>
+<meta name="twitter:description" content="Custom booking, scheduling and invoicing portals for session businesses in Hong Kong and Singapore."/>
+<meta name="twitter:image" content="https://www.ourlearningportal.com/tutoring-practices.png"/>
+
+<!-- Structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://www.ourlearningportal.com/#organization",
+      "name": "Our Learning Portal",
+      "url": "https://www.ourlearningportal.com",
+      "logo": "https://www.ourlearningportal.com/tutoring-practices.png",
+      "description": "Bespoke booking and operations portals for tutoring practices, learning centres and sports schools in Hong Kong and Singapore.",
+      "areaServed": ["Hong Kong", "Singapore"],
+      "address": [
+        {
+          "@type": "PostalAddress",
+          "streetAddress": "21/F, 23 Luard Road, Wan Chai",
+          "addressLocality": "Hong Kong",
+          "addressCountry": "HK"
+        },
+        {
+          "@type": "PostalAddress",
+          "streetAddress": "160 Robinson Road, #14-04, SBF Center",
+          "addressLocality": "Singapore",
+          "postalCode": "068914",
+          "addressCountry": "SG"
+        }
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "sales",
+        "url": "https://www.ourlearningportal.com"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://www.ourlearningportal.com/#product",
+      "name": "Our Learning Portal",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "description": "Custom portal covering parent self-service booking and rescheduling, class scheduling, automatic invoicing, and teacher availability and payslips. Built bespoke for tutoring, language, STEM, sports, music and phonics session businesses. Not a template or per-seat SaaS.",
+      "url": "https://www.ourlearningportal.com",
+      "creator": { "@id": "https://www.ourlearningportal.com/#organization" },
+      "offers": {
+        "@type": "Offer",
+        "description": "One-off build fee plus a monthly platform fee as little as HK$1,500/month. No per-seat pricing.",
+        "areaServed": ["Hong Kong", "Singapore"]
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://www.ourlearningportal.com/#website",
+      "url": "https://www.ourlearningportal.com",
+      "name": "Our Learning Portal",
+      "publisher": { "@id": "https://www.ourlearningportal.com/#organization" }
+    }
+  ]
+}
+</script>
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SNCS4ZVZB"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-6SNCS4ZVZB');
+</script>
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/favicon-180-apple-touch.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fraunces:opsz,wght,SOFT@9..144,300..700,30..100&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #f4ede0; }
+  body { font-family: Inter, sans-serif; -webkit-font-smoothing: antialiased; }
+  button { font-family: inherit; cursor: pointer; }
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #f4ede0; }
+  ::-webkit-scrollbar-thumb { background: #0c7872; border-radius: 3px; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 </head>
-<body>SEE_FULL_FILE</body>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef, createContext, useContext } = React;
+
+const MobileCtx = createContext(false);
+const useMobile = () => useContext(MobileCtx);
+const ModalCtx = createContext(() => {});
+const useModal = () => useContext(ModalCtx);
+
+function useAutoCycle(n, ms = 3200, paused = false) {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (paused) return;
+    const t = setInterval(() => setI(x => (x + 1) % n), ms);
+    return () => clearInterval(t);
+  }, [n, ms, paused]);
+  return [i, setI];
+}
+
+const C = {
+  paper: '#f4ede0', paper2: '#ebe2d1', ink: '#1c2a2c', ink2: '#4a5b5c', ink3: '#7e8c8a',
+  teal: '#0c7872', teal2: '#0a4e4b', aqua: '#7fc6c0', sand: '#d9c8a8', rust: '#b85e3a',
+  hairline: 'rgba(28,42,44,0.12)', glassBg: 'rgba(255,252,244,0.62)', glassBorder: 'rgba(28,42,44,0.08)',
+};
+
+const COPY = {
+  brand: 'Our Learning Portal',
+  domain: 'ourlearningportal.com',
+  hero: { eyebrow: 'Bespoke portals · Hong Kong & Singapore', cta: 'Book a 15-min demo', ctaSub: 'No obligation · Reply within 1 working day' },
+  modules: [
+    { key: 'parent', name: 'Parent', tagline: 'A calm home for the family timetable.', features: ['View upcoming sessions and full booking history','Reschedule or cancel classes with two taps','Track invoices and pay in one place'] },
+    { key: 'teacher', name: 'Teacher', tagline: 'Less admin, more teaching.', features: ['Your full weekly teaching schedule at a glance','Mark sessions complete or flag for make-up','See earnings, download payslips','Set and update your availability'] },
+    { key: 'admin', name: 'Admin', tagline: 'The brain of the operation.', features: ['Manage students, parents and enrolments','Weekly calendar with live overlap detection','Build programmes and assign teachers','Generate invoices and send payment reminders','Track teacher costs and issue payslips'] }
+  ],
+  whyUs: [
+    { title: 'Built where you teach', body: 'Studios in Hong Kong and Singapore. Real timezone, real conversations, real handover.' },
+    { title: 'Bespoke, not boilerplate', body: 'Your portal is shaped to how your practice actually runs. Programmes, pricing, payslips, the lot.' },
+    { title: 'Honest pricing', body: 'A one-off build fee, then as little as HK$1,500/month. No per-seat surprises.' },
+    { title: 'We stay after launch', body: 'Same team that builds it supports it. Slack us, we reply. New term, new feature.' }
+  ],
+  whoFor: [
+    { title: 'Tutoring practices', body: '1-on-1 and small group tuition, multi-subject schedules, packages and trials.' },
+    { title: 'Language schools', body: 'Mandarin, English, phonics. Term enrolments, trials, waitlists, invoices.' },
+    { title: 'STEM and coding', body: 'Coding, robotics, maker programmes. Session bookings, packages, teacher pay.' },
+    { title: 'Learning centres', body: 'Term-based programmes, classrooms and waitlists, parent communications and progress reports.' },
+    { title: 'Sports schools', body: 'Squads and tiers, coach roster and pay, term fees, equipment and competition logistics.' },
+    { title: 'Music and dance', body: 'Studios and private lessons. Reschedules, term fees, teacher roster.' }
+  ],
+  contact: {
+    addressHK: '21/F, 23 Luard Road, Wan Chai, Hong Kong',
+    addressSG: '160 Robinson Road, #14-04, SBF Center, Singapore 068914'
+  }
+};
+
+const Icon = ({ name, size = 18, stroke = 1.6, style }) => {
+  const p = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: stroke, strokeLinecap: 'round', strokeLinejoin: 'round', style };
+  switch (name) {
+    case 'parent':  return React.createElement('svg', p, React.createElement('circle', {cx:9,cy:7,r:3}), React.createElement('path', {d:'M3 21c0-3.3 2.7-6 6-6s6 2.7 6 6'}), React.createElement('circle', {cx:17,cy:9,r:2}), React.createElement('path', {d:'M14.5 21c0-2.2 1.1-3.5 2.5-3.5'}));
+    case 'teacher': return React.createElement('svg', p, React.createElement('path', {d:'M3 6l9-3 9 3-9 3-9-3z'}), React.createElement('path', {d:'M7 8v5c0 1.5 2.2 3 5 3s5-1.5 5-3V8'}), React.createElement('path', {d:'M21 6v6'}));
+    case 'admin':   return React.createElement('svg', p, React.createElement('rect', {x:3,y:4,width:18,height:16,rx:2}), React.createElement('path', {d:'M3 9h18M8 4v5M16 4v5'}), React.createElement('circle', {cx:9,cy:14,r:1}), React.createElement('circle', {cx:15,cy:14,r:1}));
+    case 'check':   return React.createElement('svg', p, React.createElement('path', {d:'M5 12l4 4 10-10'}));
+    case 'arrow':   return React.createElement('svg', p, React.createElement('path', {d:'M5 12h14M13 6l6 6-6 6'}));
+    case 'pin':     return React.createElement('svg', p, React.createElement('path', {d:'M12 22s-7-6.5-7-12a7 7 0 1114 0c0 5.5-7 12-7 12z'}), React.createElement('circle', {cx:12,cy:10,r:2.5}));
+    case 'invoice': return React.createElement('svg', p, React.createElement('path', {d:'M6 3h9l4 4v14a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z'}), React.createElement('path', {d:'M9 13h6M9 17h4M9 9h3'}));
+    case 'bell':    return React.createElement('svg', p, React.createElement('path', {d:'M6 16V11a6 6 0 0112 0v5l2 2H4z'}), React.createElement('path', {d:'M10 20a2 2 0 004 0'}));
+    case 'calendar':return React.createElement('svg', p, React.createElement('rect', {x:3,y:5,width:18,height:16,rx:2}), React.createElement('path', {d:'M3 10h18M8 3v4M16 3v4'}));
+    case 'globe':   return React.createElement('svg', p, React.createElement('circle', {cx:12,cy:12,r:9}), React.createElement('path', {d:'M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18'}));
+    default:        return React.createElement('svg', p, React.createElement('circle', {cx:12,cy:12,r:9}));
+  }
+};
+
+const Wordmark = ({ accent = C.teal, mono = C.ink }) => (
+  React.createElement('div', {style:{display:'inline-flex',alignItems:'center',gap:10,fontFamily:'Inter, sans-serif',color:mono}},
+    React.createElement('span', {style:{width:28,height:28,display:'inline-flex',alignItems:'center',justifyContent:'center'}},
+      React.createElement('svg', {width:28,height:28,viewBox:'0 0 28 28',fill:'none'},
+        React.createElement('circle', {cx:14,cy:14,r:12,stroke:accent,strokeWidth:'1.6'}),
+        React.createElement('circle', {cx:14,cy:14,r:6,fill:accent}),
+        React.createElement('circle', {cx:22,cy:14,r:1.6,fill:accent})
+      )
+    ),
+    React.createElement('span', {style:{display:'inline-flex',alignItems:'baseline',gap:6,lineHeight:1}},
+      React.createElement('span', {style:{fontWeight:600,letterSpacing:-0.4,fontSize:17}}, 'Our Learning'),
+      React.createElement('span', {style:{fontFamily:'Fraunces, serif',fontStyle:'italic',fontSize:19,color:accent,letterSpacing:-0.2}}, 'portal')
+    )
+  )
+);
+
+const Bg = () => (
+  React.createElement('div', {'aria-hidden':true, style:{position:'absolute',inset:0,overflow:'hidden',pointerEvents:'none'}},
+    React.createElement('div', {style:{position:'absolute',inset:0,background:C.paper}})
+  )
+);
+
+const Card = ({ children, style, glass = false }) => (
+  React.createElement('div', {style:{background: glass ? C.glassBg : '#fffcf4', border:`1px solid ${C.glassBorder}`, borderRadius:4, boxShadow:'0 1px 0 rgba(255,255,255,.7) inset,0 6px 24px rgba(20,30,30,.06)', ...style}}, children)
+);
+
+const Tag = ({ children, style }) => (
+  React.createElement('span', {style:{display:'inline-flex',alignItems:'center',gap:8,fontSize:11,fontFamily:'JetBrains Mono,monospace',color:C.teal,letterSpacing:1.5,textTransform:'uppercase',...style}}, children)
+);
+
+const GCAL_URL = 'https://calendar.app.google/7XWHdNcu2REb8oM79';
+
+const ContactModal = ({ onClose }) => {
+  const mob = useMobile();
+  return React.createElement('div', {onClick: e => { if (e.target === e.currentTarget) onClose(); }, style:{position:'fixed',inset:0,zIndex:1000,background:'rgba(28,42,44,0.72)',display:'flex',alignItems:'center',justifyContent:'center',padding:24}},
+    React.createElement('div', {style:{background:C.paper,borderRadius:6,padding:48,maxWidth:520,position:'relative'}},
+      React.createElement('button', {onClick:onClose, style:{position:'absolute',top:16,right:16,width:32,height:32,border:`1px solid ${C.hairline}`,background:'#fffcf4',cursor:'pointer'}}, '\u2715'),
+      React.createElement(Tag, {style:{marginBottom:14}}, 'Get in touch'),
+      React.createElement('h2', {style:{fontFamily:'Fraunces,serif',fontWeight:300,fontSize:34,color:C.ink}}, 'How would you like to connect?'),
+      React.createElement('p', {style:{fontSize:13,color:C.ink2}}, 'Book a free 15-minute intro call, or send us a message and we will get back to you.'),
+      React.createElement('a', {href:GCAL_URL, target:'_blank', rel:'noreferrer', style:{display:'inline-block',marginTop:20,padding:'15px 24px',background:C.teal,color:'#fffcf4',borderRadius:4}}, 'Book a 15-min demo')
+    )
+  );
+};
+
+const Nav = () => {
+  const mob = useMobile();
+  const openModal = useModal();
+  return React.createElement('div', {style:{display:'flex',alignItems:'center',justifyContent:'space-between',padding: mob ? '18px 20px' : '24px 64px',position:'relative',zIndex:5,borderBottom:`1px solid ${C.hairline}`}},
+    React.createElement(Wordmark),
+    React.createElement('button', {onClick:openModal, style:{padding:'12px 20px',borderRadius:4,border:`1px solid ${C.ink}`,background:C.ink,color:C.paper,fontWeight:500,fontSize:13}}, 'Book a call \u2192')
+  );
+};
+
+const Hero = () => {
+  const mob = useMobile();
+  const openModal = useModal();
+  return React.createElement('section', {style:{padding: mob ? '32px 20px 24px' : '60px 64px 40px',position:'relative'}},
+    React.createElement(Tag, {style:{marginBottom:24}}, 'A bespoke portal studio'),
+    React.createElement('h1', {style:{fontFamily:'Fraunces,serif',fontWeight:300,fontSize: mob ? 50 : 92,lineHeight:0.95,letterSpacing:-3.4,color:C.ink,margin:'16px 0 0'}},
+      'Bookings. Rescheduling. Invoices. ',
+      React.createElement('span', {style:{fontStyle:'italic',color:C.teal}}, 'One portal'),
+      ' for session businesses.'
+    ),
+    React.createElement('p', {style:{fontSize:15,lineHeight:1.65,color:C.ink2,maxWidth:620,marginTop:36}},
+      'We design and build booking and invoicing portals for session businesses: tutoring, language schools, STEM and coding, phonics, sports, music and dance. Quietly built in Hong Kong and Singapore. Not a template, not a per-seat SaaS.'
+    ),
+    React.createElement('div', {style:{marginTop:36,display:'flex',gap:18,flexWrap:'wrap',alignItems:'center'}},
+      React.createElement('button', {onClick:openModal, style:{padding:'18px 26px',borderRadius:4,border:'none',background:C.teal,color:'#fffcf4',fontSize:15,fontWeight:500}}, 'Book a free 15-min call'),
+      React.createElement('a', {href:'/portal/login', style:{padding:'18px 24px',borderRadius:4,background:C.rust,color:'#fffcf4',fontSize:15,fontWeight:500,textDecoration:'none'}}, 'Try the demo \u2192'),
+      React.createElement('div', {style:{fontSize:12,color:C.ink3}}, 'No obligation. Reply within 1 working day.')
+    )
+  );
+};
+
+const Demo = () => {
+  const mob = useMobile();
+  return React.createElement('section', {id:'demo', style:{padding: mob ? '40px 20px' : '60px 64px 72px',background:C.ink,position:'relative'}},
+    React.createElement(Tag, {style:{marginBottom:18,color:C.aqua}}, 'Live Demo'),
+    React.createElement('h2', {style:{fontFamily:'Fraunces,serif',fontWeight:300,fontSize: mob ? 38 : 58,color:'#fffcf4'}}, 'Built around how you run sessions. Not a template.'),
+    React.createElement('p', {style:{fontSize:15,color:'rgba(255,252,244,0.6)'}}, 'Explore a working portal. All data is mock \u2014 no real accounts. No mock logins on this marketing page.'),
+    React.createElement('a', {href:'/portal/login', style:{display:'inline-block',marginTop:24,padding:'18px 28px',borderRadius:4,background:C.teal,color:'#fffcf4',textDecoration:'none'}}, 'Explore the portal')
+  );
+};
+
+const WhyUs = () => {
+  const mob = useMobile();
+  return React.createElement('section', {id:'why-us', style:{padding: mob ? '32px 20px' : '40px 64px'}},
+    React.createElement(Tag, {style:{marginBottom:18}}, 'Why Teams Pick Us'),
+    React.createElement('h2', {style:{fontFamily:'Fraunces,serif',fontWeight:300,fontSize: mob ? 36 : 56,color:C.ink}}, 'A small studio, close to home.'),
+    COPY.whyUs.map((w,i) => React.createElement('div', {key:w.title, style:{padding:'28px 0',borderBottom:`1px solid ${C.hairline}`}},
+      React.createElement('h3', {style:{fontFamily:'Fraunces,serif',fontSize:24,color:C.ink}}, w.title),
+      React.createElement('p', {style:{fontSize:15,color:C.ink2}}, w.body)
+    ))
+  );
+};
+
+const WhoFor = () => {
+  const mob = useMobile();
+  return React.createElement('section', {id:'who-for', style:{padding: mob ? '40px 20px' : '60px 64px'}},
+    React.createElement(Tag, {style:{marginBottom:18}}, "Who It's For"),
+    React.createElement('h2', {style:{fontFamily:'Fraunces,serif',fontWeight:300,fontSize: mob ? 36 : 56,color:C.ink}}, 'If you run session-based classes, this is your portal.'),
+    React.createElement('div', {style:{display:'grid',gridTemplateColumns: mob ? '1fr' : 'repeat(3,1fr)',gap:20}},
+      COPY.whoFor.map((w,i) => React.createElement('div', {key:w.title},
+        !mob && React.createElement('img', {src:['/tutoring-practices.png','/learning-centres.png','/sports-schools.png'][i%3], alt:w.title, style:{width:'100%',aspectRatio:'16/9',objectFit:'contain',background:C.paper2,borderRadius:4}}),
+        React.createElement('h3', {style:{fontFamily:'Fraunces,serif',fontSize:28,color:C.ink,marginTop:20}}, w.title),
+        React.createElement('p', {style:{fontSize:14,color:C.ink2}}, w.body)
+      ))
+    )
+  );
+};
+
+const Footer = () => {
+  const mob = useMobile();
+  const openModal = useModal();
+  return React.createElement('section', {style:{padding: mob ? '24px 20px 32px' : '40px 64px 60px'}},
+    React.createElement('div', {style:{background:C.ink,color:C.paper,borderRadius:4,padding: mob ? 28 : 56}},
+      React.createElement(Tag, {style:{marginBottom:18,color:C.aqua}}, 'Ready When You Are'),
+      React.createElement('h2', {style:{fontFamily:'Fraunces,serif',fontWeight:300,fontSize: mob ? 44 : 72,color:C.paper}}, "Let's see if we're a fit."),
+      React.createElement('p', {style:{fontSize:16,color:'rgba(244,237,224,.7)'}}, 'A 15-minute call, on us. No deck, no script, no obligation.'),
+      React.createElement('button', {onClick:openModal, style:{marginTop:32,padding:'18px 26px',borderRadius:4,border:'none',background:C.aqua,color:C.teal2,fontWeight:600,fontSize:15}}, 'Book a free 15-min call'),
+      React.createElement('div', {style:{marginTop:32,fontSize:13,color:'rgba(244,237,224,.6)'}},
+        React.createElement('div', null, 'Hong Kong · ', COPY.contact.addressHK),
+        React.createElement('div', null, 'Singapore · ', COPY.contact.addressSG),
+        React.createElement('div', {style:{marginTop:12,fontFamily:'JetBrains Mono,monospace',fontSize:11,color:'rgba(244,237,224,.4)'}}, 'ourlearningportal.com \u00b7 built by 3 Peat Limited')
+      )
+    )
+  );
+};
+
+const App = () => {
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
+  const [modalOpen, setModalOpen] = useState(false);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+  return React.createElement(MobileCtx.Provider, {value:isMobile},
+    React.createElement(ModalCtx.Provider, {value: () => setModalOpen(true)},
+      React.createElement('div', {style:{position:'relative',width:'100%',minHeight:'100%',fontFamily:'Inter,sans-serif',color:C.ink,background:C.paper,overflow:'hidden'}},
+        React.createElement(Bg),
+        React.createElement('div', {style:{position:'relative'}},
+          React.createElement(Nav),
+          React.createElement(Hero),
+          React.createElement(Demo),
+          React.createElement(WhyUs),
+          React.createElement(WhoFor),
+          React.createElement(Footer)
+        ),
+        modalOpen && React.createElement(ContactModal, {onClose: () => setModalOpen(false)})
+      )
+    )
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+</script>
+</body>
 </html>
